@@ -1,0 +1,2965 @@
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+
+// Lucide-react icons (assuming they are available)
+// If not, these can be replaced with inline SVGs or Font Awesome
+const Plus = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus">
+    <path d="M12 5v14" /><path d="M5 12h14" />
+  </svg>
+);
+const Minus = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-minus">
+    <path d="M5 12h14" />
+  </svg>
+);
+const Trash2 = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trash-2">
+    <path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" />
+  </svg>
+);
+const Sword = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sword">
+    <path d="M14.5 17.5 12 15 10 17l-1 1 3 3 3-3 1-1Z" />
+    <path d="M12 15V2.5l4 4L12 15Z" />
+    <path d="M12 15H6.5l-.5-.5.5-.5H12Z" />
+    <path d="M12 15V2.5l-4 4L12 15Z" />
+    <path d="M12 15H17.5l.5-.5-.5-.5H12Z" />
+  </svg>
+);
+const User = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-user">
+    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
+const Heart = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-heart">
+    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+  </svg>
+);
+const Skull = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-skull">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 8a3 3 0 0 0-3 3v1a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v3a3 3 0 0 0 3 3h4a2 2 0 0 0 2-2V7a2 2 0  0 0-2-2h-2a2 2 0 0 0-2 2v3a3 3 0 0 0 3 3h0" />
+    <path d="M9 17v1a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-1" />
+  </svg>
+);
+const ShieldCheck = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shield-check">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
+    <path d="m9 12 2 2 4-4" />
+  </svg>
+);
+const Dice = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-dice">
+    <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+    <path d="M16 8h.01" />
+    <path d="M8 16h.01" />
+    <path d="M10 10h.01" />
+    <path d="M14 14h.01" />
+  </svg>
+);
+const Footprints = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-footprints">
+    <path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c0-1.5 1.5-2 2-2.5S6.5 3 7 3c2 0 5 5.5 5 8v5" />
+    <path d="M18 16v-2.38C18 11.5 19.03 10.5 19 8c0-1.5-1.5-2-2-2.5S15.5 3 15 3c-2 0-5 5.5-5 8v5" />
+    <path d="M17.5 19h-1.4c-1.3 0-2.6-.4-3.6-1.2l-1.3-1c-.6-.4-1.3-.6-2-.6H6" />
+    <path d="M18 18.5a4 4 0 0 1-1.4 3c-.9.6-2 .9-3.1.9h-1.4c-1.3 0-2.6-.4-3.6-1.2L6.5 19" />
+  </svg>
+);
+const Bolt = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-bolt">
+    <path d="M21 16V8a2 2 0 0 0-2-2h-3.48a2 2 0 0 1-1.93-1.48A2 2 0 0 0 12 2a2 2 0 0 0-1.59.52A2 2 0 0 1 8.48 6H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3.48a2 2 0 0 1 1.93 1.48A2 2 0 0 0 12 22a2 2 0 0 0 1.59-.52A2 2 0 0 1 15.52 18H19a2 2 0 0 0 2-2Z" />
+    <path d="M14 13h-4v3H8V9h4V6h2v7Z" />
+  </svg>
+);
+const Check = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check">
+    <path d="M20 6 9 17l-5-5" />
+  </svg>
+);
+const ScrollText = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucude-scroll-text">
+    <path d="M2 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
+    <path d="M8 7h6" />
+    <path d="M8 11h6" />
+    <path d="M8 15h6" />
+  </svg>
+);
+const RotateCcw = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-rotate-ccw">
+    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.79 2.91L3 12H2.5" />
+    <path d="M3 6v6h6" />
+  </svg>
+);
+const Lock = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-lock">
+    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+  </svg>
+);
+const LockOpen = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-lock-open">
+    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    <path d="M12 17v-6" />
+  </svg>
+);
+const ChevronDown = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-down">
+    <path d="m6 9 6 6 6-6" />
+  </svg>
+);
+const ChevronUp = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-up">
+    <path d="m18 15-6-6-6 6" />
+  </svg>
+);
+const Gem = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-gem">
+    <path d="M6 3h12l4 6-10 13L2 9Z" />
+    <path d="M11 3 8 9l4 13 4-13-3-6" />
+    <path d="M2 9h20" />
+  </svg>
+);
+const Shirt = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shirt">
+    <path d="M20.38 3.46 16 2a4 4 0 0 1-4 4 4 4 0 0 1-4-4L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84h16.29a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23Z" />
+    <path d="M4 9v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9" />
+    <path d="M10 22v-7h4v7" />
+  </svg>
+);
+
+
+// Utility function to roll dice based on notation (e.g., "2d6+3")
+// Returns an object with total, individual rolls, modifier, and dice part for display
+const rollDiceDetailed = (diceNotation) => {
+  if (!diceNotation) return { total: 0, sumOfDice: 0, rolls: [], modifier: 0, dicePart: '' };
+
+  const parts = diceNotation.match(/(\d+)d(\d+)(?:([+-]\d+))?/); // Regex to capture optional +/- modifier
+  if (!parts) {
+    console.error("Invalid dice notation:", diceNotation);
+    return { total: 0, sumOfDice: 0, rolls: [], modifier: 0, dicePart: diceNotation };
+  }
+
+  const numDice = parseInt(parts[1]);
+  const dieType = parseInt(parts[2]);
+  const modifier = parts[3] ? parseInt(parts[3]) : 0;
+
+  let individualRolls = [];
+  let sumOfDice = 0;
+  for (let i = 0; i < numDice; i++) {
+    const roll = Math.floor(Math.random() * dieType) + 1;
+    individualRolls.push(roll);
+    sumOfDice += roll;
+  }
+  return {
+    total: sumOfDice + modifier,
+    sumOfDice: sumOfDice, // Sum of just the dice rolls, without modifier
+    rolls: individualRolls,
+    modifier: modifier,
+    dicePart: `${numDice}d${dieType}`
+  };
+};
+
+// Utility function to get the maximum value of a single die type from a dice notation
+const getDieTypeMax = (diceNotation) => {
+  const parts = diceNotation.match(/d(\d+)/);
+  if (parts && parts[1]) {
+    return parseInt(parts[1]);
+  }
+  return 0; // Default if not found
+};
+
+// Utility function to parse dice notation into its parts (XdY and Modifier)
+const parseDiceNotation = (diceNotation) => {
+  const match = diceNotation.match(/^(\d+d\d+)([+-]\d+)?$/); // Updated regex to capture optional +/- modifier
+  if (match) {
+    return {
+      dicePart: match[1], // e.g., "2d6"
+      modifierPart: match[2] || '', // e.g., "+3" or "-1"
+    };
+  }
+  return { dicePart: diceNotation, modifierPart: '' }; // Fallback for malformed notation
+};
+
+// Utility function to parse dice notation into its parts (XdY and Modifier)
+const parseDiceNotationForParts = (diceNotation) => {
+  if (!diceNotation) return { dicePart: '', modifier: 0 };
+  const match = diceNotation.match(/^(\d+d\d+)([+-]\d+)?$/);
+  if (match) {
+    return {
+      dicePart: match[1], // e.g., "2d6"
+      modifier: match[2] ? parseInt(match[2]) : 0, // e.g., "+3" -> 3, "-1" -> -1, undefined -> 0
+    };
+  }
+  return { dicePart: diceNotation, modifier: 0 }; // Fallback for malformed notation or just "d20"
+};
+
+
+// ColorPickerWheel Component
+const ColorPickerWheel = ({ currentColor, allColors, onSelect, onClose }) => {
+  const pickerRef = useRef(null);
+
+  // Close picker if click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
+
+  return (
+    <div ref={pickerRef} className="absolute z-10 bg-gray-800 rounded-lg shadow-xl border border-gray-600 p-2 flex flex-col space-y-1"
+         style={{ top: '50%', right: '100%', transform: 'translateY(-50%) translateX(-10px)' }}> {/* Position to the left of the parent */}
+      {allColors.map((color, index) => (
+        <div
+          key={index}
+          className={`w-8 h-8 rounded-full border-2 cursor-pointer transition-all duration-150
+            ${currentColor === color ? 'border-white scale-110' : 'border-gray-500 hover:scale-105'}`}
+          style={{ backgroundColor: color }}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent MiniCharacterCard's click handler
+            onSelect(color);
+            // onClose(); // No need to close here, onSelect will handle it or parent will
+          }}
+        ></div>
+      ))}
+    </div>
+  );
+};
+
+// New NumberScroller Component
+const NumberScroller = ({ value, onChange, min, max, step = 1, displayUnit = '', isDefaultValueDisplay = false, hideControls = false, inputWidthClass = 'w-14', buttonPaddingClass = 'p-0.5', iconSizeClass = 'w-3 h-3', readOnly = false, displayValue = '', textColorClass = '' }) => {
+  // Ensure value is treated as a number for internal logic, but can be an empty string for initial state/placeholder
+  const parsedValue = value === '' ? min : parseInt(value);
+
+  const handleDecrement = () => {
+    if (readOnly) return; // Prevent decrement if readOnly
+    const newValue = Math.max(min, parsedValue - step);
+    onChange(newValue.toString());
+  };
+
+  const handleIncrement = () => {
+    if (readOnly) return; // Prevent increment if readOnly
+    const newValue = Math.min(max, parsedValue + step);
+    onChange(newValue.toString());
+  };
+
+  // Conditional text color based on isDefaultValueDisplay prop
+  const finalTextColorClass = textColorClass || (isDefaultValueDisplay ? 'text-gray-400' :
+                         (parsedValue < 0 ? 'text-red-400' : parsedValue > 0 ? 'text-blue-400' : 'text-white'));
+
+  return (
+    <div className="flex items-center space-x-1">
+      {!hideControls && (
+        <button
+          onClick={handleDecrement}
+          className={`${buttonPaddingClass} bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors duration-200`}
+          aria-label="Decrease value"
+          disabled={parsedValue <= min || readOnly}
+        >
+          <Minus className={iconSizeClass} />
+        </button>
+      )}
+      <input
+        type="number"
+        value={readOnly ? displayValue : value} // Use displayValue if readOnly, otherwise use actual value
+        onChange={(e) => {
+          if (readOnly) return; // Prevent change if readOnly
+          const val = e.target.value;
+          if (val === '') {
+            onChange(''); // Allow empty string for user to type
+          } else {
+            const num = parseInt(val);
+            if (!isNaN(num)) {
+              onChange(Math.min(max, Math.max(min, num)).toString());
+            }
+          }
+        }}
+        min={min}
+        max={max}
+        readOnly={readOnly} // Set readOnly attribute
+        className={`${inputWidthClass} ${buttonPaddingClass} rounded-lg text-center bg-gray-600 text-white placeholder-gray-400 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${finalTextColorClass} ${readOnly ? 'cursor-default' : ''}`}
+      />
+      {!hideControls && (
+        <button
+          onClick={handleIncrement}
+          className={`${buttonPaddingClass} bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors duration-200`}
+          aria-label="Increase value"
+          disabled={parsedValue >= max || readOnly}
+        >
+          <Plus className={iconSizeClass} />
+        </button>
+      )}
+    </div>
+  );
+};
+
+// Define D&D 5e Status Effects and their properties
+const STATUS_EFFECTS = {
+  'active': { description: 'No special conditions.', colorClass: 'bg-green-500' },
+  'blinded': { description: 'Disadvantage on attack rolls and Perception checks that rely on sight. Attack rolls against them have advantage.', colorClass: 'bg-yellow-500' },
+  'charmed': { description: 'Cannot attack the charmer or target them with harmful abilities or magical effects. The charmer has advantage on any ability check to interact socially with them.', colorClass: 'bg-pink-500' },
+  'deafened': { description: 'Automatically fails any ability check that relies on hearing.', colorClass: 'bg-yellow-500' },
+  'frightened': { description: 'Disadvantage on ability checks and attack rolls while the source of its fear is within line of sight. Cannot willingly move closer to the source of its fear.', colorClass: 'bg-orange-500' },
+  'grappled': { description: 'Speed becomes 0, and can\'t benefit from any bonus to speed. The condition ends if the grappler is incapacitated or if the grappled creature escapes.', movement: 0, colorClass: 'bg-purple-500' },
+  'incapacitated': { description: 'Cannot take actions or reactions.', colorClass: 'bg-gray-500' },
+  'invisible': { description: 'Cannot be seen without the aid of magic or a special sense. For the purpose of hiding, the creature is heavily obscured. Attack rolls against the creature have disadvantage, and the creature’s attack rolls have advantage.', colorClass: 'bg-indigo-500' },
+  'paralyzed': { description: 'Incapacitated and cannot move or speak. Automatically fails Strength and Dexterity saving throws. Attack rolls against the creature have advantage. Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature.', movement: 0, colorClass: 'bg-blue-500' },
+  'petrified': { description: 'Transformed into a solid inanimate substance. Incapacitated, cannot move or speak, and is unaware of its surroundings. Attack rolls against the creature have advantage. The creature has resistance to all damage. Automatically fails Strength and Dexterity saving throws.', movement: 0, colorClass: 'bg-gray-600' },
+  'poisoned': { description: 'Disadvantage on attack rolls and ability checks.', colorClass: 'bg-lime-500' },
+  'prone': { description: 'Can only crawl (movement half) or use half its movement to stand up. Disadvantage on attack rolls. Attack rolls against them have advantage if attacker is within 5ft, disadvantage otherwise.', movementMultiplier: 0.5, colorClass: 'bg-amber-500' },
+  'restrained': { description: 'Speed becomes 0, and can\'t benefit from any bonus to speed. Attack rolls have disadvantage. Attack rolls against them have advantage. Disadvantage on Dexterity saving throws.', movement: 0, colorClass: 'bg-purple-500' },
+  'stunned': { description: 'Incapacitated, cannot move or speak, and is unaware of its surroundings. Automatically fails Strength and Dexterity saving throws. Attack rolls against the creature have advantage.', movement: 0, colorClass: 'bg-blue-500' },
+  'unconscious': { description: 'Incapacitated, cannot move or speak, and is unaware of its surroundings. Drops held items and falls prone. Attack rolls against the creature have advantage. Any attack that hits the creature from within 5 feet is a critical hit. Automatically fails Strength and Dexterity saving throws.', movement: 0, colorClass: 'bg-red-700' },
+  'dead': { description: 'The creature is dead. Cannot take actions, reactions, or move. Automatically fails all saving throws.', movement: 0, colorClass: 'bg-gray-900' }
+};
+
+
+// CharacterCard component for the simplified right-hand list
+const MiniCharacterCard = ({ character, onSelectCharacter, isSelected, onUpdateColor, allColors, onUpdateHp, onRemoveCharacter, onUpdateStatus, onUpdateActionCheckbox, onUpdateCurrentMovement, onUpdateActions, addLogEntry, onUpdateCharacterName,
+  newCustomWeaponName, setNewCustomWeaponName, newCustomWeaponNumDice, setNewCustomWeaponNumDice, newCustomWeaponDieType, setNewCustomWeaponDieType, newCustomWeaponModifier, setNewCustomWeaponModifier,
+  selectedDamageTypeForNewWeapon, setSelectedDamageTypeForNewWeapon, customDamageTypeName, setCustomDamageTypeName, newCustomWeaponToHitModifier, setNewCustomWeaponToHitModifier,
+  onTogglePanelLock, // Pass the setter for the individual character's lock state
+  onUpdateAbilityRoll // Pass the new prop for updating ability rolls
+}) => {
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const cardRef = useRef(null); // Ref for the entire card, to detect clicks outside
+
+  const handleColorCircleClick = (e) => {
+    e.stopPropagation(); // Prevent selecting the character when changing color
+    setShowColorPicker(!showColorPicker);
+  };
+
+  const handleColorSelected = (color) => {
+    onUpdateColor(character.id, color);
+    setShowColorPicker(false); // Close picker after selection
+  };
+
+  // Close color picker if anything outside the card is clicked
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (cardRef.current && !cardRef.current.contains(event.target)) {
+        setShowColorPicker(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []); // Empty dependency array means this runs once on mount and cleans up on unmount
+
+
+  return (
+    <div className="relative"> {/* Outer div to contain card and details */}
+      <div className="relative flex items-center mb-2"> {/* Added flex and items-center for alignment */}
+        <div
+          onClick={() => onSelectCharacter(character.id)}
+          className={`flex-grow flex items-center justify-between p-3 rounded-lg shadow-md cursor-pointer transition-all duration-200
+            ${isSelected ? 'bg-purple-500 text-white border-2 border-purple-300 transform scale-105' :
+              'bg-gray-700 text-white hover:bg-gray-600'}`}
+        >
+          <div className="flex items-center">
+            <div
+              className="w-6 h-6 rounded-full border-2 border-white mr-3 cursor-pointer"
+              style={{ backgroundColor: character.color }}
+              onClick={handleColorCircleClick}
+              title="Change color"
+            ></div>
+            {/* Updated order: (Species) Name */}
+            <span className="font-semibold text-lg truncate">
+              {character.species && <span className="text-sm text-gray-300 mr-1">({character.species})</span>}
+              {character.name}
+            </span>
+          </div>
+          <span className="text-xl font-bold">{character.initiative}</span>
+        </div>
+        {/* New Turn Completed Checkbox - moved outside the main clickable area */}
+        <input
+          type="checkbox"
+          checked={character.turnCompleted || false}
+          onChange={(e) => {
+            e.stopPropagation(); // Prevent opening/closing details when clicking checkbox
+            onUpdateActionCheckbox(character.id, 'turnCompleted', e.target.checked);
+          }}
+          className="ml-3 h-6 w-6 text-green-500 rounded focus:ring-green-400 cursor-pointer flex-shrink-0"
+          title="Turn Completed"
+        />
+
+        {showColorPicker && (
+          <ColorPickerWheel
+            currentColor={character.color}
+            allColors={allColors}
+            onSelect={handleColorSelected}
+            onClose={() => setShowColorPicker(false)} // Explicitly pass onClose
+          />
+        )}
+      </div>
+      {isSelected && (
+        <CombatantDetails
+          character={character}
+          onUpdateHp={onUpdateHp}
+          onRemoveCharacter={onRemoveCharacter}
+          onUpdateStatus={onUpdateStatus}
+          onUpdateActionCheckbox={onUpdateActionCheckbox}
+          onUpdateCurrentMovement={onUpdateCurrentMovement}
+          onUpdateActions={onUpdateActions} // Pass the new prop
+          addLogEntry={addLogEntry} // Pass log function
+          onUpdateCharacterName={onUpdateCharacterName} // Pass character name update function
+          // Pass custom weapon states and setters
+          newCustomWeaponName={newCustomWeaponName}
+          setNewCustomWeaponName={setNewCustomWeaponName}
+          newCustomWeaponNumDice={newCustomWeaponNumDice}
+          setNewCustomWeaponNumDice={setNewCustomWeaponNumDice}
+          newCustomWeaponDieType={newCustomWeaponDieType}
+          setNewCustomWeaponDieType={setNewCustomWeaponDieType}
+          newCustomWeaponModifier={newCustomWeaponModifier}
+          setNewCustomWeaponModifier={setNewCustomWeaponModifier}
+          selectedDamageTypeForNewWeapon={selectedDamageTypeForNewWeapon}
+          setSelectedDamageTypeForNewWeapon={setSelectedDamageTypeForNewWeapon}
+          customDamageTypeName={customDamageTypeName}
+          setCustomDamageTypeName={setCustomDamageTypeName}
+          newCustomWeaponToHitModifier={newCustomWeaponToHitModifier}
+          setNewCustomWeaponToHitModifier={setNewCustomWeaponToHitModifier}
+          onTogglePanelLock={onTogglePanelLock} // Pass the setter
+          onUpdateAbilityRoll={onUpdateAbilityRoll} // Pass the new prop
+        />
+      )}
+    </div>
+  );
+};
+
+// New component for the summary list on the left
+const SummaryCharacterCard = ({ character, onDragStart, onDragOver, onDrop, isDraggingOver }) => {
+  const hpPercentage = (character.hp / character.maxHp) * 100;
+  const hpColorClass = hpPercentage > 50 ? 'bg-green-500' : hpPercentage > 20 ? 'bg-yellow-500' : 'bg-red-500';
+
+  // Determine HP bar color based on status
+  const statusBarColorClass = STATUS_EFFECTS[character.status]?.colorClass || 'bg-gray-500';
+
+  // State for toggling item panels
+  const [showLootPanel, setShowLootPanel] = useState(false);
+  const [showArmorPanel, setShowArmorPanel] = useState(false);
+  const [showWeaponsPanel, setShowWeaponsPanel] = useState(false);
+
+  // Filter items based on type
+  const lootItems = character.items?.filter(item => item.type === 'loot' || item.type === 'potion') || [];
+  const armorItems = character.items?.filter(item => item.type === 'armor') || [];
+  const weaponItems = character.items?.filter(item => item.type === 'weapon') || [];
+
+
+  return (
+    <div
+      onDragOver={(e) => onDragOver(e, character.id)}
+      onDrop={(e) => onDrop(e, character.id)}
+      onDragLeave={(e) => { e.currentTarget.classList.remove('border-2', 'border-blue-400'); }} // Remove border on drag leave
+      className={`p-2 mb-1 rounded-lg shadow-sm text-sm
+      ${character.status === 'dead' ? 'bg-gray-600 text-gray-400 line-through' :
+        character.status === 'unconscious' ? 'bg-red-900 text-red-300' :
+        'bg-gray-700 text-white'}
+      ${isDraggingOver ? 'border-2 border-blue-400' : ''}`}
+      style={{ opacity: isDraggingOver ? 0.5 : 1 }} // Visual feedback for dragging over
+    >
+      {/* Draggable Area */}
+      <div
+        draggable="true"
+        onDragStart={(e) => onDragStart(e, character.id)}
+        className="p-2 rounded-md border border-gray-600 bg-gray-600 cursor-grab flex items-center justify-between"
+      >
+        <div className="font-semibold text-base truncate" style={{ color: character.color }}> {/* Apply color here */}
+          {character.name}
+          {character.species && ` (${character.species})`}
+          {character.status !== 'active' && (
+            <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium ${statusBarColorClass} text-white`}>
+              {character.status.charAt(0).toUpperCase() + character.status.slice(1)}
+            </span>
+          )}
+        </div>
+        {character.type === 'monster' && (
+          <div className="flex space-x-1 ml-2">
+            {lootItems.length > 0 && (
+              <button
+                onClick={() => setShowLootPanel(!showLootPanel)}
+                className={`p-1 rounded-md text-xs font-medium transition-colors duration-200 flex items-center
+                  ${showLootPanel ? 'bg-yellow-600 text-white' : 'bg-gray-500 text-gray-200 hover:bg-gray-400'}`}
+                title="Toggle Loot"
+              >
+                <Gem className="w-3 h-3 mr-1" /> Loot
+              </button>
+            )}
+            {armorItems.length > 0 && (
+              <button
+                onClick={() => setShowArmorPanel(!showArmorPanel)}
+                className={`p-1 rounded-md text-xs font-medium transition-colors duration-200 flex items-center
+                  ${showArmorPanel ? 'bg-blue-600 text-white' : 'bg-gray-500 text-gray-200 hover:bg-gray-400'}`}
+                title="Toggle Armor"
+              >
+                <Shirt className="w-3 h-3 mr-1" /> Armor
+              </button>
+            )}
+            {weaponItems.length > 0 && (
+              <button
+                onClick={() => setShowWeaponsPanel(!showWeaponsPanel)}
+                className={`p-1 rounded-md text-xs font-medium transition-colors duration-200 flex items-center
+                  ${showWeaponsPanel ? 'bg-red-600 text-white' : 'bg-gray-500 text-gray-200 hover:bg-gray-400'}`}
+                title="Toggle Weapons"
+              >
+                <Sword className="w-3 h-3 mr-1" /> Weapons
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div className="flex flex-wrap text-xs text-gray-300 mt-1">
+        <span className="mr-2">AC: {character.ac || 'N/A'}</span>
+        <span className="mr-2">HP: {character.hp}/{character.maxHp}</span>
+        <span>Mvmt: {character.movement || 'N/A'}</span>
+      </div>
+      <div className="w-full bg-gray-300 rounded-full h-1.5 mt-1">
+        <div className={`${statusBarColorClass} h-1.5 rounded-full`} style={{ width: `${hpPercentage}%` }}></div>
+      </div>
+
+      {/* Item Panels (conditionally rendered) */}
+      {showLootPanel && lootItems.length > 0 && (
+        <div className="mt-2 p-2 bg-gray-800 rounded-md border border-yellow-700 text-gray-200">
+          <h4 className="font-semibold text-yellow-300 mb-1">Loot:</h4>
+          <ul className="list-disc list-inside text-xs space-y-0.5">
+            {lootItems.map((item, idx) => (
+              <li key={idx}>
+                {item.name} {item.quantity ? `(${item.quantity} ${item.unit})` : ''} {item.effect ? `(${item.effect})` : ''}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {showArmorPanel && armorItems.length > 0 && (
+        <div className="mt-2 p-2 bg-gray-800 rounded-md border border-blue-700 text-gray-200">
+          <h4 className="font-semibold text-blue-300 mb-1">Armor:</h4>
+          <ul className="list-disc list-inside text-xs space-y-0.5">
+            {armorItems.map((item, idx) => (
+              <li key={idx}>
+                {item.name} (AC: {item.ac}, Type: {item.armorType})
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {showWeaponsPanel && weaponItems.length > 0 && (
+        <div className="mt-2 p-2 bg-gray-800 rounded-md border border-red-700 text-gray-200">
+          <h4 className="font-semibold text-red-300 mb-1">Weapons:</h4>
+          <ul className="list-disc list-inside text-xs space-y-0.5">
+            {weaponItems.map((item, idx) => (
+              <li key={idx}>
+                {item.name} (Dmg: {item.damage} {item.damageType ? ` ${item.damageType}` : ''}{item.toHit ? `, To Hit: ${item.toHit}` : ''})
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// CombatantDetails component for the left-hand panel
+const CombatantDetails = ({ character, onUpdateHp, onRemoveCharacter, onUpdateStatus, onUpdateActionCheckbox, onUpdateCurrentMovement, onUpdateActions, addLogEntry, onUpdateCharacterName,
+  newCustomWeaponName, setNewCustomWeaponName, newCustomWeaponNumDice, setNewCustomWeaponNumDice, newCustomWeaponDieType, setNewCustomWeaponDieType, newCustomWeaponModifier, setNewCustomWeaponModifier,
+  selectedDamageTypeForNewWeapon, setSelectedDamageTypeForNewWeapon, customDamageTypeName, setCustomDamageTypeName, newCustomWeaponToHitModifier, setNewCustomWeaponToHitModifier,
+  onTogglePanelLock, // Receive lock state and setter
+  onUpdateAbilityRoll // Receive the new prop for updating ability rolls
+}) => {
+  const [hpAdjustmentAmount, setHpAdjustmentAmount] = useState('');
+  const [movementAdjustmentAmount, setMovementAdjustmentAmount] = useState('');
+  const [lastRollMessage, setLastRollMessage] = useState(null); // General roll message
+  const [weaponDamageRolls, setWeaponDamageRolls] = useState({}); // Specific damage roll results for each weapon
+  const [weaponToHitRolls, setWeaponToHitRolls] = useState({}); // Specific to-hit roll results for each weapon
+  const [showStats, setShowStats] = useState(false); // State for showing/hiding ability scores
+  const [criticalHitFlags, setCriticalHitFlags] = useState({}); // New state to track critical hits for each weapon
+
+  // New state for collapsible custom weapon form
+  const [showAddCustomWeaponForm, setShowAddCustomWeaponForm] = useState(false);
+
+  const MAX_CUSTOM_WEAPONS = 8;
+
+  if (!character) {
+    return (
+      <div className="p-6 bg-gray-700 rounded-xl shadow-inner border border-gray-600 text-center text-gray-400">
+        Select a combatant from the list to view details.
+      </div>
+    );
+  }
+
+  const hpPercentage = (character.hp / character.maxHp) * 100;
+  const hpColorClass = hpPercentage > 50 ? 'bg-green-500' : hpPercentage > 20 ? 'bg-yellow-500' : 'bg-red-500';
+
+  const calculateModifier = (score) => Math.floor((score - 10) / 2);
+
+  const handleStatRoll = (statName, modifier) => {
+    const d20Roll = Math.floor(Math.random() * 20) + 1;
+    const total = d20Roll + modifier;
+    // Update the character's lastAbilityRoll directly via prop
+    onUpdateAbilityRoll(character.id, { stat: statName, roll: d20Roll, total: total });
+    addLogEntry({ type: 'skill', characterId: character.id, message: `rolled ${statName} check:`, value: total, details: `(${d20Roll} + ${modifier})` });
+  };
+
+  const handleHpAdjustment = (type) => {
+    const amount = parseInt(hpAdjustmentAmount);
+    if (isNaN(amount) || amount <= 0) {
+      console.warn("Please enter a valid positive number for HP adjustment.");
+      return;
+    }
+    let newHp = character.hp;
+    if (type === 'add') {
+      newHp = character.hp + amount;
+      addLogEntry({ type: 'hp_change', characterId: character.id, message: `healed`, value: amount, hpChangeType: 'heal' });
+    } else if (type === 'subtract') {
+      newHp = character.hp - amount;
+      addLogEntry({ type: 'hp_change', characterId: character.id, message: `took damage`, value: amount, hpChangeType: 'damage' });
+    }
+    onUpdateHp(character.id, newHp);
+    setHpAdjustmentAmount(''); // Clear input after adjustment
+  };
+
+  const handleMovementAdjustment = (type) => {
+    const amount = parseInt(movementAdjustmentAmount);
+    if (isNaN(amount) || amount <= 0) {
+      console.warn("Please enter a valid positive number for movement adjustment.");
+      return;
+    }
+    let newMovement = character.currentMovement;
+    if (type === 'add') {
+      newMovement = character.currentMovement + amount;
+    } else if (type === 'subtract') {
+      newMovement = character.currentMovement - amount;
+    }
+    onUpdateCurrentMovement(character.id, newMovement);
+    setMovementAdjustmentAmount(''); // Clear input after adjustment
+  };
+
+  const handleResetActions = () => {
+    onUpdateActionCheckbox(character.id, 'actionUsed', false);
+    onUpdateActionCheckbox(character.id, 'bonusActionUsed', false);
+    onUpdateActionCheckbox(character.id, 'dashUsed', false);
+    onUpdateActionCheckbox(character.id, 'reactionUsed', false);
+    onUpdateActionCheckbox(character.id, 'turnCompleted', false); // Also reset turn completed
+  };
+
+  // Function to handle rolling a weapon's damage dice
+  const handleRollDamage = (actionId, weaponName, diceNotation, damageType) => {
+    let rollResult;
+    let logMessagePrefix;
+    let displayMessage;
+
+    if (criticalHitFlags[actionId]) {
+      // Critical hit damage calculation: (max damage value from original base die) + (random rolled value using normal attack die) + (modifiers)
+      const maxDieValue = getDieTypeMax(diceNotation);
+      const normalRoll = rollDiceDetailed(diceNotation); // This gives XdY + Z
+      const criticalTotal = maxDieValue + normalRoll.sumOfDice + normalRoll.modifier;
+
+      rollResult = { total: criticalTotal, rolls: [...normalRoll.rolls, maxDieValue], modifier: normalRoll.modifier, dicePart: normalRoll.dicePart };
+
+      const mathString = `${maxDieValue} (max) + ${normalRoll.rolls.join(' + ')}` + (normalRoll.modifier !== 0 ? ` ${normalRoll.modifier > 0 ? '+' : ''}${normalRoll.modifier}` : '');
+      logMessagePrefix = `rolled CRITICAL ${weaponName} damage:`;
+      addLogEntry({ type: 'damage', characterId: character.id, message: logMessagePrefix, value: criticalTotal, details: `(${mathString}) ${damageType ? `[${damageType}]` : ''}`, isCrit: true });
+      displayMessage = `${weaponName} CRIT Damage: ${criticalTotal} (${rollResult.dicePart} + ${maxDieValue}${rollResult.modifier !== 0 ? (rollResult.modifier > 0 ? `+${rollResult.modifier}` : `${rollResult.modifier}`) : ''})`;
+
+    } else {
+      // Normal damage calculation
+      rollResult = rollDiceDetailed(diceNotation);
+      const mathString = rollResult.rolls.join(' + ') + (rollResult.modifier !== 0 ? ` ${rollResult.modifier > 0 ? '+' : ''}${rollResult.modifier}` : '');
+      logMessagePrefix = `rolled ${weaponName} damage:`;
+      addLogEntry({ type: 'damage', characterId: character.id, message: logMessagePrefix, value: rollResult.total, details: `(${mathString}) ${damageType ? `[${damageType}]` : ''}` });
+      displayMessage = `${weaponName} Damage: ${rollResult.total} (${rollResult.dicePart}${rollResult.modifier !== 0 ? (rollResult.modifier > 0 ? `+${rollResult.modifier}` : `${rollResult.modifier}`) : ''})`;
+    }
+
+    setWeaponDamageRolls(prevRolls => ({
+      ...prevRolls,
+      [actionId]: rollResult.total
+    }));
+
+    setLastRollMessage(displayMessage);
+
+    // Reset critical hit flag after rolling damage
+    setCriticalHitFlags(prevFlags => ({
+      ...prevFlags,
+      [actionId]: false
+    }));
+
+    setTimeout(() => {
+      setLastRollMessage(null);
+    }, 5000); // Clear general message after 5 seconds
+  };
+
+  // Function to handle rolling a weapon's to-hit dice
+  const handleRollToHit = (actionId, weaponName, toHitModifier) => {
+    const d20Roll = Math.floor(Math.random() * 20) + 1;
+    const totalToHit = d20Roll + toHitModifier;
+
+    setWeaponToHitRolls(prevRolls => ({
+      ...prevRolls,
+      [actionId]: totalToHit
+    }));
+
+    // Set critical hit flag if natural 20 is rolled
+    setCriticalHitFlags(prevFlags => ({
+      ...prevFlags,
+      [actionId]: d20Roll === 20
+    }));
+
+    const modifierString = toHitModifier !== 0 ? (toHitModifier > 0 ? `+${toHitModifier}` : `${toHitModifier}`) : '';
+    addLogEntry({ type: 'to_hit', characterId: character.id, message: `rolled ${weaponName} to hit:`, value: totalToHit, details: `(${d20Roll}${modifierString})`, isCrit: d20Roll === 20 });
+
+    setLastRollMessage(`${weaponName} To Hit: ${totalToHit} (${d20Roll}${modifierString}${d20Roll === 20 ? ' (CRITICAL!)' : ''})`);
+    setTimeout(() => {
+      setLastRollMessage(null);
+    }, 5000); // Clear general message after 5 seconds
+  };
+
+
+  // Function to add a new custom weapon
+  const handleAddCustomWeapon = () => {
+    if (!newCustomWeaponName.trim()) {
+      console.warn("Weapon name cannot be empty.");
+      return;
+    }
+    if (character.actions.length >= MAX_CUSTOM_WEAPONS) {
+      console.warn(`Cannot add more than ${MAX_CUSTOM_WEAPONS} custom weapons.`);
+      return;
+    }
+
+    const modifierValue = parseInt(newCustomWeaponModifier);
+    const modifierPart = !isNaN(modifierValue) && modifierValue !== 0 ?
+                         (modifierValue > 0 ? `+${modifierValue}` : `${modifierValue}`) : '';
+    const diceNotation = `${newCustomWeaponNumDice}${newCustomWeaponDieType}${modifierPart}`;
+
+    // Ensure toHitModifier is 0 if input is empty, so the button always appears
+    const toHitModifierValue = parseInt(newCustomWeaponToHitModifier);
+    const finalToHitModifier = !isNaN(toHitModifierValue) ? toHitModifierValue : 0;
+
+    // Determine the damage type based on dropdown selection
+    const finalDamageType = selectedDamageTypeForNewWeapon === 'Other'
+      ? customDamageTypeName.trim() || undefined
+      : selectedDamageTypeForNewWeapon;
+
+    const newWeapon = {
+      id: crypto.randomUUID(), // Assign unique ID for tracking rolls
+      name: newCustomWeaponName.trim(),
+      dice: diceNotation,
+      damageType: finalDamageType, // Use the determined damage type
+      toHitModifier: finalToHitModifier, // Use the determined toHitModifier
+    };
+
+    onUpdateActions(character.id, [...character.actions, newWeapon]);
+    // No longer clearing inputs here, as they are managed by App component
+  };
+
+
+  // Effect to automatically check 'turnCompleted'
+  useEffect(() => {
+    if (character) {
+      const isPrimaryActionUsed = character.actionUsed || character.dashUsed;
+      const isBonusActionUsed = character.bonusActionUsed;
+      const isReactionUsed = character.reactionUsed;
+      const isMovementExhausted = character.currentMovement !== undefined && character.currentMovement <= 0;
+
+      // Condition for auto-checking 'turnCompleted'
+      // "if all actions are checked (or) the dash is checked, and all bonus actions are checked, and all movementmis exhausted"
+      // Interpreting "all actions" as (actionUsed AND reactionUsed) OR dashUsed
+      const autoCheckCondition = (
+        ((character.actionUsed && character.reactionUsed) || character.dashUsed) &&
+        isBonusActionUsed &&
+        isMovementExhausted
+      );
+
+      if (autoCheckCondition && !character.turnCompleted) {
+        onUpdateActionCheckbox(character.id, 'turnCompleted', true);
+      }
+    }
+  }, [
+    character,
+    character.actionUsed,
+    character.bonusActionUsed,
+    character.dashUsed,
+    character.reactionUsed,
+    character.currentMovement,
+    character.turnCompleted,
+    onUpdateActionCheckbox
+  ]);
+
+
+  return (
+    <div className={`p-6 rounded-xl shadow-lg transition-all duration-300 border mt-4
+      ${character.status === 'dead' ? 'bg-gray-700 text-gray-400' :
+        character.status === 'unconscious' ? 'bg-red-900 text-red-300' :
+        'bg-gray-700 text-white'}`}>
+      <h2 className="text-2xl font-bold mb-4 text-center">
+        <input
+          type="text"
+          value={character.name}
+          onChange={(e) => onUpdateCharacterName(character.id, e.target.value)}
+          maxLength={30} // Max length for character name
+          className="bg-transparent border-b-2 border-gray-500 hover:border-purple-500 focus:border-purple-500 focus:outline-none text-white text-center text-2xl font-bold w-full"
+          aria-label="Combatant Name"
+        />
+        {character.species && <span className="text-xl font-normal text-gray-400"> ({character.species})</span>}
+      </h2>
+
+      {/* Keep Open Toggle Button */}
+      <div className="flex justify-center mb-4">
+        <button
+          onClick={() => onTogglePanelLock(character.id, !character.isLocked)}
+          className={`py-2 px-4 rounded-lg font-semibold transition-colors duration-200 flex items-center space-x-2
+            ${character.isLocked ? 'bg-purple-700 text-white hover:bg-purple-800' : 'bg-gray-600 text-gray-300 hover:bg-gray-500'}`}
+          title={character.isLocked ? "Unlock details panel (will close on selecting other combatants)" : "Lock details panel (will stay open when selecting other combatants)"}
+        >
+          {character.isLocked ? <Lock className="w-5 h-5" /> : <LockOpen className="w-5 h-5" />}
+          <span>{character.isLocked ? 'Panel Locked' : 'Panel Unlocked'}</span>
+        </button>
+      </div>
+
+      {lastRollMessage && (
+        <div className="bg-blue-600 text-white p-3 rounded-lg mb-4 text-center font-semibold animate-bounce">
+          {lastRollMessage}
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="flex items-center space-x-2">
+          <ShieldCheck className="w-6 h-6 text-gray-400" />
+          <span className="font-semibold">AC: {character.ac || 'N/A'}</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Footprints className="w-6 h-6 text-gray-400" />
+          <span className="font-semibold">Movement: {character.movement || 'N/A'}</span>
+        </div>
+      </div>
+
+      {/* HP Display and Adjustment */}
+      <div className="mb-4">
+        <div className="flex items-center space-x-2 mb-2">
+          <Heart className={`w-6 h-6 ${character.status === 'dead' ? 'text-gray-500' : 'text-red-500'}`} />
+          <span className="font-bold text-xl">HP: {character.hp} / {character.maxHp}</span>
+        </div>
+        <div className="w-full bg-gray-300 rounded-full h-3 mb-2">
+          <div className={`${hpColorClass} h-3 rounded-full`} style={{ width: `${hpPercentage}%` }}></div>
+        </div>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => handleHpAdjustment('subtract')}
+            className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200"
+            aria-label="Decrease HP by amount"
+          >
+            <Minus className="w-5 h-5" />
+          </button>
+          <input
+            type="number"
+            value={hpAdjustmentAmount}
+            onChange={(e) => setHpAdjustmentAmount(e.target.value)}
+            placeholder="Amount"
+            className="w-24 p-2 rounded-lg text-center bg-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            onClick={() => handleHpAdjustment('add')}
+            className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200"
+            aria-label="Increase HP by amount"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Current Movement Display and Adjustment */}
+      {character.movement && (
+        <div className="mb-4">
+          <div className="flex items-center space-x-2 mb-2">
+            <Footprints className="w-6 h-6 text-gray-400" />
+            <span className="font-bold text-xl">Current Movement: {character.currentMovement || 0}ft</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => handleMovementAdjustment('subtract')}
+              className="p-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors duration-200"
+              aria-label="Decrease Movement by amount"
+            >
+              <Minus className="w-5 h-5" />
+            </button>
+          <input
+            type="number"
+            value={movementAdjustmentAmount}
+            onChange={(e) => setMovementAdjustmentAmount(e.target.value)}
+            placeholder="Amount"
+            className="w-24 p-2 rounded-lg text-center bg-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            onClick={() => handleMovementAdjustment('add')}
+            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            aria-label="Increase Movement by amount"
+          >
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+      )}
+
+
+      {/* Status and Actions */}
+      <div className="mb-4">
+        <label htmlFor="status-select" className="block text-sm font-medium text-gray-400 mb-1">Status</label>
+        <select
+          id="status-select"
+          value={character.status}
+          onChange={(e) => onUpdateStatus(character.id, e.target.value)}
+          className={`p-2 rounded-md text-sm font-medium focus:ring-2 focus:ring-offset-2 w-full
+            ${STATUS_EFFECTS[character.status]?.colorClass || 'bg-gray-500'} text-white`}
+        >
+          {Object.keys(STATUS_EFFECTS).map(statusKey => (
+            <option key={statusKey} value={statusKey}>
+              {statusKey.charAt(0).toUpperCase() + statusKey.slice(1)}
+            </option>
+          ))}
+        </select>
+        {character.status !== 'active' && (
+          <p className="text-xs text-gray-400 mt-2 italic">
+            **Effect:** {STATUS_EFFECTS[character.status]?.description}
+          </p>
+        )}
+      </div>
+
+      {/* New: Ability Scores Section */}
+      <div className="mb-4">
+        <button
+          onClick={() => setShowStats(!showStats)}
+          className="w-full py-2 px-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
+        >
+          {showStats ? 'Hide Stats' : 'Show Stats'}
+        </button>
+
+        {showStats && (
+          <div className="mt-3 p-4 bg-gray-600 rounded-lg border border-gray-500">
+            <div className="flex justify-between items-center mb-2"> {/* Use flex to align title and roll result */}
+              <h4 className="text-md font-semibold">Ability Scores</h4>
+              {character.lastAbilityRoll && (
+                <div className="flex items-center space-x-2 bg-gray-800 px-3 py-1 rounded-full shadow-md">
+                  <span className="text-xs text-gray-400 font-semibold">Skill Check:</span>
+                  <span className="text-lg text-blue-300 font-bold animate-pulse">
+                    {character.lastAbilityRoll.total}
+                  </span>
+                  <span className="text-xs text-gray-500">({character.lastAbilityRoll.stat})</span>
+                </div>
+              )}
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              {['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'].map(stat => {
+                const score = character[stat.toLowerCase()] || 10; // Default to 10 if not set
+                const modifier = calculateModifier(score);
+                const modifierDisplay = modifier >= 0 ? `+${modifier}` : `${modifier}`;
+                return (
+                  <div key={stat} className="flex flex-col items-center justify-center p-2 bg-gray-700 rounded-md">
+                    <button
+                      onClick={() => handleStatRoll(stat, modifier)}
+                      className="flex items-center space-x-1 text-lg font-bold text-gray-200 hover:text-purple-300 transition-colors"
+                      title={`Roll ${stat} Check`}
+                    >
+                      <span>{stat}</span>
+                      <Dice className="w-5 h-5 text-green-400" /> {/* Green Dice Icon */}
+                    </button>
+                    <span className="text-white text-xl font-bold">{score}</span>
+                    <span className="text-sm text-gray-400">({modifierDisplay})</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* New: Actions Taken This Turn Checkboxes */}
+      <div className="mb-4 p-4 bg-gray-600 rounded-lg border border-gray-500">
+        <h3 className="text-lg font-semibold flex items-center space-x-2 mb-3 text-gray-200">
+          <Bolt className="w-5 h-5 text-gray-400" />
+          <span>Actions Taken This Turn:</span>
+        </h3>
+        <div className="grid grid-cols-2 gap-3 text-sm">
+          <div className="flex items-center">
+            <input
+              id={`action-used-${character.id}`}
+              type="checkbox"
+              checked={character.actionUsed || false}
+              onChange={(e) => onUpdateActionCheckbox(character.id, 'actionUsed', e.target.checked)}
+              disabled={character.dashUsed} // Disable if Dash is checked
+              className={`h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${character.dashUsed ? 'opacity-50 cursor-not-allowed' : ''}`}
+            />
+            <label htmlFor={`action-used-${character.id}`} className={`ml-2 ${character.dashUsed ? 'text-gray-500' : 'text-gray-300'}`}>Action</label>
+          </div>
+          <div className="flex items-center">
+            <input
+              id={`bonus-action-used-${character.id}`}
+              type="checkbox"
+              checked={character.bonusActionUsed || false}
+              onChange={(e) => onUpdateActionCheckbox(character.id, 'bonusActionUsed', e.target.checked)}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label htmlFor={`bonus-action-used-${character.id}`} className="ml-2 text-gray-300">Bonus Action</label>
+          </div>
+          <div className="flex items-center">
+            <input
+              id={`dash-used-${character.id}`}
+              type="checkbox"
+              checked={character.dashUsed || false}
+              onChange={(e) => onUpdateActionCheckbox(character.id, 'dashUsed', e.target.checked)}
+              disabled={character.actionUsed} // Disable if Action is checked
+              className={`h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${character.actionUsed ? 'opacity-50 cursor-not-allowed' : ''}`}
+            />
+            <label htmlFor={`dash-used-${character.id}`} className={`ml-2 ${character.actionUsed ? 'text-gray-500' : 'text-gray-300'}`}>Dash</label>
+          </div>
+          <div className="flex items-center">
+            <input
+              id={`reaction-used-${character.id}`}
+              type="checkbox"
+              checked={character.reactionUsed || false}
+              onChange={(e) => onUpdateActionCheckbox(character.id, 'reactionUsed', e.target.checked)}
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label htmlFor={`reaction-used-${character.id}`} className="ml-2 text-gray-300">Reaction</label>
+          </div>
+        </div>
+        <button
+          onClick={handleResetActions}
+          className="w-full py-2 px-4 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors duration-200 mt-4 text-sm"
+        >
+          Reset Actions for Turn
+        </button>
+      </div>
+
+
+      {/* Available Actions / Weapons */}
+      {character.actions && character.actions.length > 0 && (
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center space-x-2 mb-2 text-gray-200">
+            <Sword className="w-5 h-5 text-gray-400" />
+            <span>Available Attacks/Weapons:</span>
+          </h3>
+          <ul className="list-disc list-inside text-gray-300 space-y-2">
+            {character.actions.map((action) => {
+              const damageRollResult = action.dice ? rollDiceDetailed(action.dice) : null;
+              const toHitModifierString = action.toHitModifier !== undefined && action.toHitModifier !== 0 ?
+                                          (action.toHitModifier > 0 ? `+${action.toHitModifier}` : `${action.toHitModifier}`) : '';
+              const isCritical = criticalHitFlags[action.id];
+              return (
+                <li key={action.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-gray-600 pb-2 last:border-b-0">
+                  <div className="flex items-center flex-grow mb-2 sm:mb-0">
+                    <span className="w-16 text-right mr-2 font-bold text-lg text-red-400">
+                      {weaponDamageRolls[action.id] !== undefined ? weaponDamageRolls[action.id] : ''}
+                    </span>
+                    <span className="font-semibold text-gray-200">{action.name}</span>
+                    {action.damageType && (
+                      <span className="ml-2 text-xs text-gray-400">({action.damageType})</span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center space-x-2 flex-wrap sm:flex-nowrap">
+                    {/* To Hit Roll */}
+                    {(action.toHitModifier !== undefined) && ( // Show if 0 or any other number
+                      <div className="flex items-center mr-2">
+                        <span className="w-10 text-right mr-1 font-bold text-md text-green-300">
+                          {weaponToHitRolls[action.id] !== undefined ? weaponToHitRolls[action.id] : ''}
+                        </span>
+                        <button
+                          onClick={() => handleRollToHit(action.id, action.name, action.toHitModifier)}
+                          className="p-1.5 bg-green-700 text-white rounded-md hover:bg-green-800 transition-colors duration-200 flex items-center text-sm"
+                          title={`Roll To Hit (1d20${toHitModifierString})`}
+                        >
+                          <Dice className="w-4 h-4 mr-1" /> To Hit
+                        </button>
+                        {toHitModifierString && (
+                          <span className="ml-1 text-sm text-gray-400">
+                            {toHitModifierString}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Damage Roll */}
+                    {action.dice && (
+                      <div className="flex items-center">
+                        <button
+                          onClick={() => handleRollDamage(action.id, action.name, action.dice, action.damageType)}
+                          className={`p-1.5 text-white rounded-md transition-colors duration-200 flex items-center text-sm
+                            ${isCritical ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+                          title={`Roll Damage (${action.dice}) ${isCritical ? '(CRITICAL)' : ''}`}
+                        >
+                          <Dice className="w-4 h-4 mr-1" /> {parseDiceNotation(action.dice).dicePart}
+                        </button>
+                        {parseDiceNotation(action.dice).modifierPart && (
+                          <span className="ml-1 text-sm text-gray-400">
+                            {parseDiceNotation(action.dice).modifierPart}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
+      {/* Add Custom Weapon/Attack Section - Now Collapsible */}
+      <div className="mb-4 p-4 bg-gray-600 rounded-lg border border-gray-500">
+        <button
+          onClick={() => setShowAddCustomWeaponForm(!showAddCustomWeaponForm)}
+          className="w-full py-2 px-4 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center space-x-2 text-sm font-semibold"
+        >
+          {showAddCustomWeaponForm ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+          <span>{showAddCustomWeaponForm ? 'Hide Custom Weapon Form' : 'Add Custom Weapon/Attack'} ({character.actions.length}/{MAX_CUSTOM_WEAPONS})</span>
+        </button>
+
+        {showAddCustomWeaponForm && (
+          <div className="mt-3 space-y-3">
+            <input
+              type="text"
+              placeholder="Attack/Weapon Name"
+              value={newCustomWeaponName}
+              onChange={(e) => setNewCustomWeaponName(e.target.value)}
+              maxLength={40} // Max length for weapon name
+              className="w-full p-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <div className="flex items-center space-x-2">
+              <input
+                type="number"
+                min="1"
+                max="100"
+                value={newCustomWeaponNumDice}
+                onChange={(e) => setNewCustomWeaponNumDice(Math.min(100, Math.max(1, parseInt(e.target.value) || 1)))}
+                className={`w-16 p-2 rounded-lg text-center bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500
+                  ${newCustomWeaponNumDice === 1 ? 'text-gray-400' : ''}`}
+                placeholder="1"
+              />
+              <span className="text-lg font-bold text-gray-300">D</span>
+              <select
+                value={newCustomWeaponDieType}
+                onChange={(e) => setNewCustomWeaponDieType(e.target.value)}
+                className="p-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 flex-grow"
+              >
+                <option value="d4">d4</option>
+                <option value="d6">d6</option>
+                <option value="d8">d8</option>
+                <option value="d10">d10</option>
+                <option value="d12">d12</option>
+                <option value="d20">d20</option>
+                <option value="d100">d100</option>
+              </select>
+              {/* Replaced input with NumberScroller for Damage Modifier */}
+              <NumberScroller
+                value={newCustomWeaponModifier}
+                onChange={setNewCustomWeaponModifier}
+                min={-20}
+                max={20}
+              />
+            </div>
+            {/* Damage Type Dropdown */}
+            <div>
+              <label htmlFor="damage-type-select" className="block text-sm font-medium text-gray-300 mb-1">Damage Type</label>
+              <select
+                id="damage-type-select"
+                value={selectedDamageTypeForNewWeapon}
+                onChange={(e) => {
+                  setSelectedDamageTypeForNewWeapon(e.target.value);
+                  if (e.target.value !== 'Other') {
+                    setCustomDamageTypeName(''); // Clear custom input if not 'Other'
+                  }
+                }}
+                className="w-full p-2 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="">-- Select Damage Type --</option>
+                <option value="Acid">Acid</option>
+                <option value="Bludgeoning">Bludgeoning</option>
+                <option value="Cold">Cold</option>
+                <option value="Fire">Fire</option>
+                <option value="Force">Force</option>
+                <option value="Lightning">Lightning</option>
+                <option value="Necrotic">Necrotic</option>
+                <option value="Piercing">Piercing</option>
+                <option value="Poison">Poison</option>
+                <option value="Psychic">Psychic</option>
+                <option value="Radiant">Radiant</option>
+                <option value="Slashing">Slashing</option>
+                <option value="Thunder">Thunder</option>
+                <option value="Other">Other (Type Below)</option>
+              </select>
+            </div>
+            {selectedDamageTypeForNewWeapon === 'Other' && (
+              <input
+                type="text"
+                placeholder="Custom Damage Type"
+                value={customDamageTypeName}
+                onChange={(e) => setCustomDamageTypeName(e.target.value)}
+                className="w-full p-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 mt-2"
+              />
+            )}
+            {/* Replaced input with NumberScroller for To Hit Modifier */}
+            <div className="flex items-center">
+              <label htmlFor="to-hit-modifier-scroller" className="block text-sm font-medium text-gray-300 mr-2">To Hit Modifier:</label>
+              <NumberScroller
+                value={newCustomWeaponToHitModifier}
+                onChange={setNewCustomWeaponToHitModifier}
+                min={-20}
+                max={20}
+              />
+            </div>
+            <button
+              onClick={handleAddCustomWeapon}
+              disabled={character.actions.length >= MAX_CUSTOM_WEAPONS}
+              className={`w-full py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 mt-4
+                ${character.actions.length >= MAX_CUSTOM_WEAPONS ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              Add Weapon
+            </button>
+          </div>
+        )}
+      </div>
+
+
+      <button
+        onClick={() => onRemoveCharacter(character.id)}
+        className="w-full py-2 px-4 bg-gray-600 text-white rounded-xl hover:bg-gray-500 transition-colors duration-200 mt-4"
+        aria-label="Remove character"
+      >
+        <Trash2 className="inline-block mr-2 w-5 h-5" /> Remove Combatant
+      </button>
+    </div>
+  );
+};
+
+// New UndoDropdown Component
+const UndoDropdown = ({ deletedCharacters, onRestore, onClear }) => {
+  const [selectedCharId, setSelectedCharId] = useState('');
+
+  useEffect(() => {
+    // Automatically select the first item if the list is populated and nothing is selected
+    if (deletedCharacters.length > 0 && !selectedCharId) {
+      setSelectedCharId(deletedCharacters[0].id);
+    } else if (deletedCharacters.length === 0) {
+      setSelectedCharId(''); // Clear selection if list becomes empty
+    }
+  }, [deletedCharacters, selectedCharId]);
+
+  const handleRestoreClick = () => {
+    if (selectedCharId) {
+      onRestore(selectedCharId);
+      // No need to clear selectedCharId here, useEffect will handle it if the item is removed from the stack
+    }
+  };
+
+  return (
+    <div className="p-4 bg-gray-600 rounded-xl shadow-inner border border-gray-500 mt-4">
+      <h3 className="text-lg font-semibold text-gray-200 mb-3">Restore Deleted Combatant</h3>
+      <div className="flex flex-col space-y-2">
+        <select
+          value={selectedCharId}
+          onChange={(e) => setSelectedCharId(e.target.value)}
+          className="p-2 rounded-lg bg-gray-700 text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 w-full"
+          disabled={deletedCharacters.length === 0}
+        >
+          <option value="">-- Select to Restore --</option>
+          {deletedCharacters.map(char => (
+            <option key={char.id} value={char.id}>
+              {char.name} (Init: {char.initiative}, HP: {char.hp}/{char.maxHp})
+            </option>
+          ))}
+        </select>
+        <button
+          onClick={handleRestoreClick}
+          disabled={!selectedCharId}
+          className={`w-full py-2 px-4 text-white font-bold rounded-lg shadow-md transition-all duration-300 flex items-center justify-center space-x-2
+            ${selectedCharId ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-500 cursor-not-allowed opacity-50'}`}
+        >
+          <RotateCcw className="w-5 h-5" />
+          <span>Restore Selected</span>
+        </button>
+        <button
+          onClick={onClear}
+          disabled={deletedCharacters.length === 0}
+          className={`w-full py-2 px-4 text-white font-bold rounded-lg shadow-md transition-all duration-300 flex items-center justify-center space-x-2
+            ${deletedCharacters.length > 0 ? 'bg-red-600 hover:bg-red-700' : 'bg-gray-500 cursor-not-allowed opacity-50'}`}
+        >
+          <Trash2 className="w-5 h-5" />
+          <span>Clear All Deleted ({deletedCharacters.length})</span>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+
+// Main App component
+const App = () => {
+  const [characters, setCharacters] = useState([]);
+  const [deletedCharactersStack, setDeletedCharactersStack] = useState([]); // New state for undo stack
+  const [newCharacterName, setNewCharacterName] = useState('');
+  const [newCharacterInitiative, setNewCharacterInitiative] = useState(''); // Stores the total initiative
+  const [monsterInitiativeMathDisplay, setMonsterInitiativeMathDisplay] = useState(''); // Stores "d20 roll" for display
+  const [newCharacterHp, setNewCharacterHp] = useState('1'); // Default to '1' for NumberScroller
+  const [newCharacterAc, setNewCharacterAc] = useState('1'); // Default to '1' for NumberScroller
+  const [newCharacterHpDice, setNewCharacterHpDice] = useState(''); // XdY part of HP dice
+  const [newCharacterHpModifier, setNewCharacterHpModifier] = useState(''); // Modifier part of HP dice
+  const [newCharacterHpBaseRollDisplay, setNewCharacterHpBaseRollDisplay] = useState(''); // New state for HP base roll display
+  const [newCharacterMovement, setNewCharacterMovement] = useState('0'); // New state for movement, default to '0'
+  const [newCharacterActions, setNewCharacterActions] = useState(''); // New state for actions (comma-separated)
+  const [newCharacterType, setNewCharacterType] = useState('player');
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedMonsterId, setSelectedMonsterId] = useState('');
+  const [monsterSortOption, setMonsterSortOption] = useState('name');
+  // Changed selectedCombatantId to a Set to allow multiple open detail panels
+  const [openCombatantIds, setOpenCombatantIds] = useState(new Set());
+  const [newCharacterQuantity, setNewCharacterQuantity] = useState('1'); // Changed to '1' for NumberScroller default
+
+  // New states for randomization checkboxes
+  const [randomizeAc, setRandomizeAc] = useState(false);
+  const [randomizeWeapons, setRandomizeWeapons] = useState(false);
+  const [createUniqueNames, setCreateUniqueNames] = useState(false);
+  const [sharedInitiative, setSharedInitiative] = useState(true); // New state for shared initiative, default true
+  const [rollHpOnAddBatch, setRollHpOnAddBatch] = useState(false); // New state for rolling HP on batch add
+  const [randomizeNewCombatantStats, setRandomizeNewCombatantStats] = useState(false); // New state for randomizing all 6 stats
+
+  // New states for player ability scores
+  const [newCharacterStr, setNewCharacterStr] = useState('');
+  const [newCharacterDex, setNewCharacterDex] = useState('');
+  const [newCharacterCon, setNewCharacterCon] = useState('');
+  const [newCharacterInt, setNewCharacterInt] = useState('');
+  const [newCharacterWis, setNewCharacterWis] = useState('');
+  const [newCharacterCha, setNewCharacterCha] = useState('');
+
+  // State for "All Combatants Overview" collapsibility
+  const [isOverviewCollapsed, setIsOverviewCollapsed] = useState(false);
+
+
+  // State to track the next color index for sequential assignment
+  const [nextColorIndex, setNextColorIndex] = useState(0);
+
+  // Combat Log states
+  const [logEntries, setLogEntries] = useState([]);
+  const [showLog, setShowLog] = useState(false);
+  const logRef = useRef(null); // Ref for scrolling log to bottom
+
+  // Global states for Custom Weapon inputs (lifted from CombatantDetails)
+  const [newCustomWeaponName, setNewCustomWeaponName] = useState('');
+  const [newCustomWeaponNumDice, setNewCustomWeaponNumDice] = useState(1);
+  const [newCustomWeaponDieType, setNewCustomWeaponDieType] = useState('d4');
+  const [newCustomWeaponModifier, setNewCustomWeaponModifier] = useState('');
+  const [selectedDamageTypeForNewWeapon, setSelectedDamageTypeForNewWeapon] = useState(''); // New state for dropdown
+  const [customDamageTypeName, setCustomDamageTypeName] = useState(''); // New state for custom input
+  const [newCustomWeaponToHitModifier, setNewCustomWeaponToHitModifier] = useState('');
+
+  // State to keep track of used unique names to prevent repetition
+  const [usedUniqueNames] = useState(new Set()); // Changed to useState for proper state management
+
+  // State for monster initiative roll display (removed monsterD20Roll, now part of monsterInitiativeMathDisplay)
+  const [currentMonsterInitiativeBonus, setCurrentMonsterInitiativeBonus] = useState(0);
+
+  // Drag and Drop states for "All Combatants Overview"
+  const [draggedItemId, setDraggedItemId] = useState(null);
+  const [dragOverItemId, setDragOverItemId] = useState(null);
+
+
+  const MAX_TOTAL_COMBATANTS = 40;
+  const MAX_ADD_QUANTITY = 20;
+  const MAX_UNDO_HISTORY = 20; // Max number of deleted combatants to store for undo
+
+  // Define the 12-color palette
+  const COLORS = useMemo(() => [
+    '#FF0000', // Red
+    '#FF7F00', // Orange
+    '#FFFF00', // Yellow
+    '#7FFF00', // Chartreuse Green
+    '#00FF00', // Green
+    '#00FF7F', // Spring Green
+    '#00FFFF', // Cyan
+    '#007FFF', // Azure
+    '#0000FF', // Blue
+    '#7F00FF', // Violet
+    '#FF00FF', // Magenta
+    '#FF007F', // Rose
+  ], []);
+
+  // Function to add a log entry
+  const addLogEntry = useCallback(({ type, characterId, message, value, details, isCrit, hpChangeType }) => {
+    setLogEntries(prevEntries => [
+      ...prevEntries,
+      { timestamp: new Date(), type, characterId, message, value, details, isCrit, hpChangeType }
+    ]);
+  }, []);
+
+  // Scroll log to bottom when new entries are added
+  useEffect(() => {
+    if (logRef.current) {
+      logRef.current.scrollTop = logRef.current.scrollHeight;
+    }
+  }, [logEntries]);
+
+  // Name data for unique naming
+  const namesData = useMemo(() => ({
+    human: {
+      first: ["Aric", "Bryn", "Cael", "Elara", "Finn", "Gareth", "Isolde", "Kaelen", "Lyra", "Milo", "Niamh", "Orin", "Pippa", "Quinn", "Rowan", "Seraphina", "Thorne", "Una", "Vance", "Willow"],
+      last: ["Blackwood", "Stone", "Fairwind", "Ironhide", "Swift", "Brightblade", "Shadowbrook", "Strongarm", "Deepriver", "Lightfoot", "Grimfang", "Sunstrider", "Whisperwind", "Stonemarch", "Goldhand", "Moonwhisper", "Trueheart", "Wilder", "Frostbeard", "Fireforge"]
+    },
+    elf: {
+      first: ["Aerion", "Faelar", "Glimmer", "Illyana", "Lirael", "Mithrandir", "Nym", "Oriana", "Silvanus", "Thranduil", "Valen", "Zephyr", "Aeliana", "Eldrin", "Feyra", "Galad", "Lyra", "Nimrodel", "Sylas", "Vanya"],
+      last: ["Moonwhisper", "Starfall", "Shadowleaf", "Riverlight", "Whisperwind", "Everhart", "Nightshade", "Sunstrider", "Deepwood", "Silverstream", "Brightarrow", "Truebow", "Stardancer", "Forestheart", "Gemflower", "Lightwing", "Greensong", "Swiftfoot", "Windrider", "Mistwalker"]
+    },
+    dwarf: {
+      first: ["Borin", "Durin", "Gimli", "Hilda", "Kael", "Magnus", "Odin", "Thrain", "Volk", "Yara", "Bronn", "Dagna", "Grak", "Helga", "Korgan", "Murdin", "Olga", "Thorek", "Vali", "Yngvar"],
+      last: ["Stonebeard", "Ironfist", "Deepdelver", "Hammerfall", "Rockshield", "Goldaxe", "Bouldergrip", "Strongpick", "Coalhammer", "Steelheart", "Grimeye", "Anvilhand", "Orebelly", "Granitefoot", "Runesmith", "Darkiron", "Cinderbeard", "Stonebrow", "Brewbarrel", "Fellhammer"]
+    },
+    orc: {
+      first: ["Grak", "Thorg", "Urza", "Zog", "Grish", "Snarl", "Mog", "Klarg", "Drog", "Vrak", "Horg", "Ragnuk", "Skarg", "Grognak", "Murdok", "Grum", "Bonecrunch", "Bloodaxe", "Gutripper", "Ironhide"],
+      last: ["Skullsplitter", "Bloodfang", "Ironjaw", "Bonebreaker", "Grimaxe", "Shadowhide", "Stonefist", "Blacktooth", "Redeye", "Spinecrusher", "Gutrender", "Fleshripper", "Rockfist", "Wargrider", "Goretooth", "Savageblade", "Rageheart", "Deathbringer", "Stormcaller", "Earthshaker"]
+    },
+    goblin: {
+      first: ["Snik", "Grub", "Fizz", "Wort", "Mog", "Pox", "Stink", "Grib", "Flick", "Snarl", "Rik", "Zog", "Kik", "Blink", "Drip", "Squint", "Twitch", "Glim", "Nox", "Pip"],
+      last: ["Stabber", "Sneak", "Grime", "Pustule", "Wartnose", "Scurry", "Quickfinger", "Mudfoot", "Shadowhide", "Backstab", "Greenskin", "Rustblade", "Caveborn", "Dirtfoot", "Webspinner", "Foulbreath", "Nighteye", "Stonehide", "Gutterfang", "Slimefoot"]
+    },
+    skeleton: {
+      first: ["Clatter", "Rattle", "Bone", "Shank", "Grave", "Dust", "Husk", "Wither", "Echo", "Shade", "Grim", "Silent", "Hollow", "Creak", "Ancient", "Pale", "Whisper", "Stiff", "Crumble", "Lost"],
+      last: ["Bones", "Rattler", "Shambler", "Crypt", "Wight", "Dusty", "Hollow", "Grim", "Silent", "Echo", "Grave", "Pale", "Whisper", "Stiff", "Crumble", "Lost", "Wither", "Shade", "Ancient", "Forgotten"]
+    },
+    zombie: {
+      first: ["Groan", "Stumble", "Rot", "Pus", "Grave", "Dread", "Shamble", "Lurch", "Maw", "Stench", "Flesh", "Decay", "Hunger", "Mould", "Slime", "Corpse", "Reek", "Drunk", "Slow", "Dumb"],
+      last: ["Walker", "Rotter", "Stumbler", "Graveborn", "Dreadful", "Shambler", "Lurcher", "Maw", "Stench", "Flesh", "Decay", "Hunger", "Mould", "Slime", "Corpse", "Reek", "Drunk", "Slow", "Dumb", "Mindless"]
+    },
+    dragon: {
+      first: ["Ignis", "Aura", "Cinder", "Drakon", "Fafnir", "Glaurung", "Harkon", "Ignis", "Jormungandr", "Kaelen", "Lava", "Malakor", "Nidhogg", "Onyx", "Pyre", "Quill", "Ragnar", "Smaug", "Tiamat", "Urth"],
+      last: [] // Last names not used for "X the Dragon" format
+    },
+    elemental: {
+      first: ["Ignis", "Storm", "Terra", "Aqua", "Cinder", "Gale", "Stone", "Torrent", "Spark", "Quake", "Mist", "Blaze", "Boulder", "Riptide", "Zephyr", "Dust", "Frost", "Magma", "Vortex", "Breeze"],
+      last: [] // Last names not used for "X the Elemental" format
+    },
+  }), []);
+
+
+  // Simulated monster data (with movement and actions)
+  const allMonsters = useMemo(() => [
+    { id: 'goblin', name: 'Goblin', species: 'Goblin', hp: 7, ac: 15, hpDice: '2d6', initiativeBonus: 2, movement: '30ft', actions: [{name: 'Scimitar Attack', dice: '1d6+2', damageType: 'Slashing', toHitModifier: 4}, {name: 'Shortbow Attack', dice: '1d6+1', damageType: 'Piercing', toHitModifier: 4}], str: 8, dex: 14, con: 10, int: 10, wis: 8, cha: 8,
+      items: [
+        { type: 'weapon', name: 'Scimitar', damage: '1d6', damageType: 'Slashing', toHit: '+4' },
+        { type: 'weapon', name: 'Shortbow', damage: '1d6', damageType: 'Piercing', toHit: '+4' },
+        { type: 'armor', name: 'Leather Armor', ac: 11, armorType: 'Light' },
+        { type: 'loot', name: '2d4 cp', quantity: '2d4', unit: 'cp' },
+        { type: 'loot', name: '1d6 sp', quantity: '1d6', unit: 'sp' },
+        { type: 'loot', name: 'Goblin Ear' },
+      ]
+    },
+    { id: 'orc', name: 'Orc', species: 'Orc', hp: 15, ac: 13, hpDice: '2d8+6', initiativeBonus: 0, movement: '30ft', actions: [{name: 'Greataxe Attack', dice: '1d12+3', damageType: 'Slashing', toHitModifier: 5}, {name: 'Javelin Attack', dice: '1d6+3', damageType: 'Piercing', toHitModifier: 5}], str: 16, dex: 12, con: 16, int: 7, wis: 11, cha: 10,
+      items: [
+        { type: 'weapon', name: 'Greataxe', damage: '1d12', damageType: 'Slashing', toHit: '+5' },
+        { type: 'weapon', name: 'Javelin', damage: '1d6', damageType: 'Piercing', toHit: '+5' },
+        { type: 'armor', name: 'Hide Armor', ac: 12, armorType: 'Medium' },
+        { type: 'loot', name: '5 gp', quantity: '5', unit: 'gp' },
+        { type: 'loot', name: 'Orc Tooth' },
+      ]
+    },
+    { id: 'bugbear', name: 'Bugbear', species: 'Bugbear', hp: 27, ac: 16, hpDice: '5d8+5', initiativeBonus: 2, movement: '30ft', actions: [{name: 'Morningstar Attack', dice: '2d8+3', damageType: 'Piercing', toHitModifier: 5}, {name: 'Javelin Attack', dice: '1d6+3', damageType: 'Piercing', toHitModifier: 5}], str: 15, dex: 14, con: 13, int: 8, wis: 11, cha: 9,
+      items: [
+        { type: 'weapon', name: 'Morningstar', damage: '2d8', damageType: 'Piercing', toHit: '+5' },
+        { type: 'weapon', name: 'Javelin', damage: '1d6', damageType: 'Piercing', toHit: '+5' },
+        { type: 'armor', name: 'Scale Mail', ac: 14, armorType: 'Medium' },
+        { type: 'loot', name: '1d10 gp', quantity: '1d10', unit: 'gp' },
+        { type: 'loot', name: 'Bugbear Hide' },
+      ]
+    },
+    { id: 'direwolf', name: 'Dire Wolf', species: 'Wolf', hp: 37, ac: 14, hpDice: '5d10+10', initiativeBonus: 2, movement: '50ft', actions: [{name: 'Bite', dice: '2d6+3', damageType: 'Piercing', toHitModifier: 5}], str: 17, dex: 15, con: 15, int: 3, wis: 12, cha: 7,
+      items: [
+        { type: 'loot', name: 'Dire Wolf Pelt', value: '25 gp' },
+        { type: 'loot', name: 'Dire Wolf Fang' },
+      ]
+    },
+    { id: 'ogre', name: 'Ogre', species: 'Ogre', hp: 59, ac: 11, hpDice: '7d10+21', initiativeBonus: -1, movement: '40ft', actions: [{name: 'Greatclub Attack', dice: '2d8+4', damageType: 'Bludgeoning', toHitModifier: 6}, {name: 'Javelin Attack', dice: '1d6+4', damageType: 'Piercing', toHitModifier: 6}], str: 19, dex: 8, con: 16, int: 5, wis: 7, cha: 7,
+      items: [
+        { type: 'weapon', name: 'Greatclub', damage: '2d8', damageType: 'Bludgeoning', toHit: '+6' },
+        { type: 'weapon', name: 'Javelin', damage: '1d6', damageType: 'Piercing', toHit: '+6' },
+        { type: 'armor', name: 'Hide Armor (Ogre-sized)', ac: 12, armorType: 'Medium' },
+        { type: 'loot', name: '2d20 gp', quantity: '2d20', unit: 'gp' },
+        { type: 'loot', name: 'Ogre\'s Belt' },
+      ]
+    },
+    { id: 'dragon_wyrmling_red', name: 'Red Dragon Wyrmling', species: 'Dragon', hp: 75, ac: 17, hpDice: '10d8+30', initiativeBonus: 2, movement: '30ft, Fly 60ft', actions: [{name: 'Bite', dice: '1d10+4', damageType: 'Piercing', toHitModifier: 6}, {name: 'Fire Breath', dice: '6d6', damageType: 'Fire'}], str: 19, dex: 10, con: 17, int: 12, wis: 11, cha: 15,
+      items: [
+        { type: 'loot', name: '100 gp', quantity: '100', unit: 'gp' },
+        { type: 'loot', name: 'Small Ruby', value: '50 gp' },
+        { type: 'loot', name: 'Dragon Scale' },
+      ]
+    },
+    { id: 'hobgoblin', name: 'Hobgoblin', species: 'Hobgoblin', hp: 11, ac: 18, hpDice: '2d8+2', initiativeBonus: 0, movement: '30ft', actions: [{name: 'Longsword Attack', dice: '1d8+1', damageType: 'Slashing', toHitModifier: 3}, {name: 'Longbow Attack', dice: '1d8+1', damageType: 'Piercing', toHitModifier: 3}], str: 13, dex: 12, con: 12, int: 10, wis: 10, cha: 9,
+      items: [
+        { type: 'weapon', name: 'Longsword', damage: '1d8', damageType: 'Slashing', toHit: '+3' },
+        { type: 'weapon', name: 'Longbow', damage: '1d8', damageType: 'Piercing', toHit: '+3' },
+        { type: 'armor', name: 'Chain Mail', ac: 16, armorType: 'Heavy' },
+        { type: 'loot', name: '1d6 gp', quantity: '1d6', unit: 'gp' },
+      ]
+    },
+    { id: 'skeleton', name: 'Skeleton', species: 'Undead', hp: 13, ac: 13, hpDice: '2d8+4', initiativeBonus: 2, movement: '30ft', actions: [{name: 'Shortsword Attack', dice: '1d6+2', damageType: 'Piercing', toHitModifier: 4}, {name: 'Shortbow Attack', dice: '1d6+2', damageType: 'Piercing', toHitModifier: 4}], str: 10, dex: 14, con: 15, int: 6, wis: 8, cha: 5,
+      items: [
+        { type: 'weapon', name: 'Shortsword', damage: '1d6', damageType: 'Piercing', toHit: '+4' },
+        { type: 'weapon', name: 'Shortbow', damage: '1d6', damageType: 'Piercing', toHit: '+4' },
+        { type: 'armor', name: 'Shield', ac: 2, armorType: 'Shield' },
+        { type: 'loot', name: 'Rusty Key' },
+      ]
+    },
+    { id: 'zombie', name: 'Zombie', species: 'Undead', hp: 22, ac: 8, hpDice: '3d8+9', initiativeBonus: -2, movement: '20ft', actions: [{name: 'Slam', dice: '1d6+1', damageType: 'Bludgeoning', toHitModifier: 3}], str: 13, dex: 6, con: 16, int: 3, wis: 6, cha: 5,
+      items: [
+        { type: 'loot', name: 'Rotten Flesh' },
+      ]
+    },
+    { id: 'giant_spider', name: 'Giant Spider', species: 'Beast', hp: 26, ac: 14, hpDice: '5d8+5', initiativeBonus: 3, movement: '30ft, Climb 30ft', actions: [{name: 'Bite (Poison)', dice: '1d8+3', damageType: 'Piercing'}], str: 14, dex: 16, con: 12, int: 2, wis: 10, cha: 4,
+      items: [
+        { type: 'loot', name: 'Giant Spider Silk', value: '10 gp' },
+        { type: 'loot', name: 'Poison Gland' },
+      ]
+    },
+    { id: 'owlbear', name: 'Owlbear', species: 'Monstrosity', hp: 59, ac: 13, hpDice: '7d10+21', initiativeBonus: 1, movement: '40ft', actions: [{name: 'Beak', dice: '1d10+5', damageType: 'Piercing', toHitModifier: 7}, {name: 'Claws', dice: '2d8+5', damageType: 'Slashing', toHitModifier: 7}], str: 20, dex: 12, con: 17, int: 3, wis: 12, cha: 7,
+      items: [
+        { type: 'loot', name: 'Owlbear Feather', value: '5 gp' },
+        { type: 'loot', name: 'Owlbear Claw' },
+      ]
+    },
+    { id: 'minotaur', name: 'Minotaur', species: 'Monstrosity', hp: 76, ac: 14, hpDice: '9d10+27', initiativeBonus: 0, movement: '40ft', actions: [{name: 'Greataxe Attack', dice: '2d12+4', damageType: 'Slashing', toHitModifier: 6}, {name: 'Gore', dice: '2d8+4', damageType: 'Piercing', toHitModifier: 6}], str: 18, dex: 11, con: 16, int: 6, wis: 10, cha: 9,
+      items: [
+        { type: 'weapon', name: 'Greataxe', damage: '2d12', damageType: 'Slashing', toHit: '+6' },
+        { type: 'loot', name: 'Minotaur Horn', value: '50 gp' },
+      ]
+    },
+    { id: 'ettin', name: 'Ettin', species: 'Giant', hp: 85, ac: 12, hpDice: '10d10+30', initiativeBonus: -1, movement: '40ft', actions: [{name: 'Greataxe (Left Head)', dice: '2d12+4', damageType: 'Slashing', toHitModifier: 7}, {name: 'Greataxe (Right Head)', dice: '2d12+4', damageType: 'Slashing', toHitModifier: 7}], str: 21, dex: 8, con: 17, int: 6, wis: 10, cha: 8,
+      items: [
+        { type: 'weapon', name: 'Greataxe', damage: '2d12', damageType: 'Slashing', toHit: '+7' },
+        { type: 'loot', name: 'Ettin Skull', value: '20 gp' },
+      ]
+    },
+    { id: 'hill_giant', name: 'Hill Giant', species: 'Giant', hp: 105, ac: 13, hpDice: '10d12+40', initiativeBonus: -1, movement: '40ft', actions: [{name: 'Greatclub Attack', dice: '3d8+6', damageType: 'Bludgeoning', toHitModifier: 8}, {name: 'Rock Attack', dice: '2d10+6', damageType: 'Bludgeoning', toHitModifier: 8}], str: 21, dex: 8, con: 19, int: 5, wis: 9, cha: 6,
+      items: [
+        { type: 'weapon', name: 'Greatclub', damage: '3d8', damageType: 'Bludgeoning', toHit: '+8' },
+        { type: 'loot', name: 'Giant\'s Club' },
+        { type: 'loot', name: '1d100 gp', quantity: '1d100', unit: 'gp' },
+      ]
+    },
+    { id: 'dragon_wyrmling_red_adult', name: 'Adult Red Dragon Wyrmling', species: 'Dragon', hp: 75, ac: 17, hpDice: '10d8+30', initiativeBonus: 2, movement: '30ft, Fly 60ft', actions: [{name: 'Bite', dice: '1d10+4', damageType: 'Piercing', toHitModifier: 6}, {name: 'Fire Breath', dice: '6d6', damageType: 'Fire'}], str: 19, dex: 10, con: 17, int: 12, wis: 11, cha: 15,
+      items: [
+        { type: 'loot', name: '100 gp', quantity: '100', unit: 'gp' },
+        { type: 'loot', name: 'Small Ruby', value: '50 gp' },
+        { type: 'loot', name: 'Dragon Scale' },
+      ]
+    },
+    { id: 'hobgoblin_captain', name: 'Hobgoblin Captain', species: 'Hobgoblin', hp: 39, ac: 17, hpDice: '6d8+12', initiativeBonus: 1, movement: '30ft', actions: [{name: 'Greatsword', dice: '2d6+2', damageType: 'Slashing', toHitModifier: 5}, {name: 'Javelin', dice: '1d6+2', damageType: 'Piercing', toHitModifier: 5}, {name: 'Parry (Bonus Action)'}], str: 15, dex: 14, con: 14, int: 12, wis: 10, cha: 13,
+      items: [
+        { type: 'weapon', name: 'Greatsword', damage: '2d6', damageType: 'Slashing', toHit: '+5' },
+        { type: 'armor', name: 'Plate Armor', ac: 18, armorType: 'Heavy' },
+        { type: 'loot', name: '2d10 gp', quantity: '2d10', unit: 'gp' },
+        { type: 'loot', name: 'Captain\'s Insignia' },
+      ]
+    },
+    { id: 'ghoul', name: 'Ghoul', species: 'Undead', hp: 22, ac: 12, hpDice: '5d8', initiativeBonus: 2, movement: '30ft', actions: [{name: 'Claws', dice: '2d6+2', damageType: 'Slashing', toHitModifier: 4}, {name: 'Bite', dice: '2d6+2', damageType: 'Piercing', toHitModifier: 2}], str: 13, dex: 15, con: 10, int: 10, wis: 10, cha: 8,
+      items: [
+        { type: 'loot', name: 'Ghoul Hand' },
+      ]
+    },
+    { id: 'fire_elemental', name: 'Fire Elemental', species: 'Elemental', hp: 102, ac: 13, hpDice: '12d10+36', initiativeBonus: 4, movement: '50ft', actions: [{name: 'Touch', dice: '2d8+4', damageType: 'Fire', toHitModifier: 6}, {name: 'Fire Form'}], str: 10, dex: 19, con: 13, int: 6, wis: 10, cha: 7,
+      items: [
+        { type: 'loot', name: 'Elemental Core (Fire)', value: '100 gp' },
+      ]
+    },
+    { id: 'water_elemental', name: 'Water Elemental', species: 'Elemental', hp: 114, ac: 13, hpDice: '12d10+48', initiativeBonus: 2, movement: '30ft, Swim 90ft', actions: [{name: 'Slam', dice: '2d8+4', damageType: 'Bludgeoning', toHitModifier: 7}, {name: 'Whelm'}], str: 18, dex: 14, con: 18, int: 5, wis: 10, cha: 8,
+      items: [
+        { type: 'loot', name: 'Elemental Core (Water)', value: '100 gp' },
+      ]
+    },
+    { id: 'air_elemental', name: 'Air Elemental', species: 'Elemental', hp: 90, ac: 15, hpDice: '12d8+36', initiativeBonus: 4, movement: '0ft, Fly 90ft (hover)', actions: [{name: 'Slam', dice: '2d8+4', damageType: 'Bludgeoning', toHitModifier: 5}, {name: 'Whirlwind'}], str: 14, dex: 20, con: 14, int: 6, wis: 10, cha: 8,
+      items: [
+        { type: 'loot', name: 'Elemental Core (Air)', value: '100 gp' },
+      ]
+    },
+    { id: 'earth_elemental', name: 'Earth Elemental', species: 'Elemental', hp: 126, ac: 17, hpDice: '12d10+60', initiativeBonus: -1, movement: '30ft, Burrow 30ft', actions: [{name: 'Slam', dice: '2d8+5', damageType: 'Bludgeoning', toHitModifier: 8}, {name: 'Earth Glide'}], str: 20, dex: 8, con: 20, int: 5, wis: 10, cha: 5,
+      items: [
+        { type: 'loot', name: 'Elemental Core (Earth)', value: '100 gp' },
+      ]
+    },
+    { id: 'grick', name: 'Grick', species: 'Aberration', hp: 27, ac: 18, hpDice: '6d8', initiativeBonus: 2, movement: '30ft, Climb 30ft', actions: [{name: 'Tentacles', dice: '2d6+2', damageType: 'Slashing', toHitModifier: 4}, {name: 'Beak', dice: '1d6+2', damageType: 'Piercing', toHitModifier: 4}], str: 14, dex: 16, con: 11, int: 3, wis: 14, cha: 5,
+      items: [
+        { type: 'loot', name: 'Grick Hide', value: '15 gp' },
+      ]
+    },
+    { id: 'gargoyle', name: 'Gargoyle', species: 'Elemental', hp: 52, ac: 15, hpDice: '7d8+21', initiativeBonus: 0, movement: '30ft, Fly 60ft', actions: [{name: 'Claws', dice: '1d6+3', damageType: 'Sludgeoning', toHitModifier: 4}, {name: 'Bite', dice: '1d6+3', damageType: 'Piercing', toHitModifier: 4}], str: 15, dex: 11, con: 16, int: 6, wis: 11, cha: 7,
+      items: [
+        { type: 'loot', name: 'Gargoyle Dust' },
+      ]
+    },
+    { id: 'mimic', name: 'Mimic', species: 'Monstrosity', hp: 58, ac: 12, hpDice: '9d8+18', initiativeBonus: 1, movement: '15ft', actions: [{name: 'Pseudopod', dice: '1d8+3', damageType: 'Bludgeoning', toHitModifier: 5}, {name: 'Bite', dice: '1d8+3', damageType: 'Acid', toHitModifier: 5}], str: 17, dex: 12, con: 15, int: 5, wis: 13, cha: 8,
+      items: [
+        { type: 'loot', name: 'Mimic Slime', value: '50 gp' },
+      ]
+    },
+    { id: 'displacer_beast', name: 'Displacer Beast', species: 'Monstrosity', hp: 85, ac: 13, hpDice: '10d10+30', initiativeBonus: 2, movement: '40ft', actions: [{name: 'Tentacle', dice: '1d6+4', damageType: 'Bludgeoning', toHitModifier: 6}, {name: 'Displacement'}], str: 18, dex: 15, con: 16, int: 6, wis: 12, cha: 8,
+      items: [
+        { type: 'loot', name: 'Displacer Beast Tentacle', value: '75 gp' },
+      ]
+    },
+    { id: 'basilisk', name: 'Basilisk', species: 'Monstrosity', hp: 52, ac: 15, hpDice: '9d8+18', initiativeBonus: -1, movement: '20ft', actions: [{name: 'Bite', dice: '2d6+2', damageType: 'Piercing', toHitModifier: 4}, {name: 'Petrifying Gaze'}], str: 16, dex: 8, con: 15, int: 2, wis: 8, cha: 7,
+      items: [
+        { type: 'loot', name: 'Basilisk Eye', value: '100 gp' },
+      ]
+    },
+    { id: 'medusa', name: 'Medusa', species: 'Monstrosity', hp: 127, ac: 15, hpDice: '17d8+51', initiativeBonus: 2, movement: '30ft', actions: [{name: 'Shortsword', dice: '1d6+2', damageType: 'Piercing', toHitModifier: 5}, {name: 'Snake Hair', dice: '1d4+2', damageType: 'Poison', toHitModifier: 5}, {name: 'Petrifying Gaze'}], str: 10, dex: 15, con: 16, int: 12, wis: 13, cha: 15,
+      items: [
+        { type: 'weapon', name: 'Shortsword', damage: '1d6', damageType: 'Piercing', toHit: '+5' },
+        { type: 'loot', name: 'Medusa\'s Head (Petrified)', value: '500 gp' },
+      ]
+    },
+    { id: 'beholder', name: 'Beholder', species: 'Aberration', hp: 180, ac: 18, hpDice: '19d10+76', initiativeBonus: 2, movement: '0ft, Fly 20ft (hover)', actions: [{name: 'Bite', dice: '2d6+4', damageType: 'Piercing', toHitModifier: 5}, {name: 'Eye Rays'}], str: 10, dex: 14, con: 18, int: 17, wis: 15, cha: 17,
+      items: [
+        { type: 'loot', name: 'Beholder Eye Stalk', value: '1000 gp' },
+        { type: 'loot', name: 'Beholder Central Eye', value: '5000 gp' },
+      ]
+    },
+    { id: 'dragon_shadow', name: 'Shadow Dragon (Young Red)', species: 'Dragon', hp: 172, ac: 18, hpDice: '16d10+84', initiativeBonus: 0, movement: '40ft, Fly 80ft', actions: [{name: 'Bite', dice: '2d10+6', damageType: 'Piercing', toHitModifier: 10}, {name: 'Claw', dice: '2d6+6', damageType: 'Slashing', toHitModifier: 10}, {name: 'Shadow Breath', dice: '10d6', damageType: 'Necrotic'}], str: 19, dex: 12, con: 17, int: 14, wis: 11, cha: 17,
+      items: [
+        { type: 'loot', name: 'Shadow Dragon Scale', value: '250 gp' },
+        { type: 'loot', name: 'Shadow Gem', value: '100 gp' },
+      ]
+    },
+    { id: 'vampire', name: 'Vampire', species: 'Undead', hp: 144, ac: 16, hpDice: '16d8+72', initiativeBonus: 4, movement: '30ft', actions: [{name: 'Unarmed Strike', dice: '1d8+4', damageType: 'Bludgeoning', toHitModifier: 9}, {name: 'Bite (Vampire)', dice: '1d6+4', damageType: 'Necrotic', toHitModifier: 9}], str: 18, dex: 18, con: 18, int: 17, wis: 15, cha: 18,
+      items: [
+        { type: 'loot', name: 'Vampire Dust', value: '500 gp' },
+        { type: 'loot', name: 'Fine Clothes', value: '75 gp' },
+      ]
+    },
+    { id: 'lich_king', name: 'Lich King', species: 'Undead', hp: 200, ac: 18, hpDice: '20d8+110', initiativeBonus: 5, movement: '30ft', actions: [{name: 'Chill Touch (Cantrip)', dice: '2d8', damageType: 'Necrotic', toHitModifier: 10}, {name: 'Disrupt Life (Spell)', dice: '10d6', damageType: 'Necrotic'}, {name: 'Counterspell (Reaction)'}], str: 11, dex: 16, con: 16, int: 20, wis: 14, cha: 16,
+      items: [
+        { type: 'loot', name: 'Orb of Undeath', value: '5000 gp' },
+        { type: 'loot', name: 'Lich Phylactery', value: 'Priceless' },
+      ]
+    },
+    { id: 'storm_giant', name: 'Storm Giant', species: 'Giant', hp: 162, ac: 16, hpDice: '13d12+78', initiativeBonus: 4, movement: '50ft, Swim 50ft', actions: [{name: 'Greatsword', dice: '6d6+7', damageType: 'Slashing', toHitModifier: 14}, {name: 'Rock', dice: '4d10+7', damageType: 'Bludgeoning', toHitModifier: 14}, {name: 'Lightning Strike'}], str: 29, dex: 14, con: 20, int: 16, wis: 18, cha: 18,
+      items: [
+        { type: 'weapon', name: 'Giant Greatsword', damage: '6d6', damageType: 'Slashing', toHit: '+14' },
+        { type: 'loot', name: 'Giant\'s Club' },
+        { type: 'loot', name: '1d1000 gp', quantity: '1d1000', unit: 'gp' },
+      ]
+    },
+  ], []);
+
+  // Calculate the maximum HP from all monsters for the Max HP scroller limit
+  const maxHpLimit = useMemo(() => {
+    const highestMonsterHp = allMonsters.reduce((max, monster) => Math.max(max, monster.hp), 0);
+    return highestMonsterHp + 200; // Highest HP in DM is 676 (Tarrasque) + 200 = 876
+  }, [allMonsters]);
+
+
+  // Function to generate a unique name for a monster
+  const generateMonsterName = useCallback((monsterTemplate, existingNamesSet) => {
+    const speciesType = monsterTemplate.species.toLowerCase();
+    const availableNames = namesData[speciesType]?.first;
+    const availableLastNames = namesData[speciesType]?.last;
+
+    if (!availableNames || availableNames.length === 0) {
+      return monsterTemplate.name; // Fallback if no names are defined for species
+    }
+
+    let newName = '';
+    let attempts = 0;
+    const maxAttempts = 100; // Prevent infinite loop
+
+    // Handle "X the Y" format for specific large creatures
+    const isSpecialNaming = speciesType === 'dragon' || speciesType === 'elemental';
+
+    do {
+      let tempName = availableNames[Math.floor(Math.random() * availableNames.length)];
+      if (availableLastNames && availableLastNames.length > 0 && !isSpecialNaming) {
+        tempName += ' ' + availableLastNames[Math.floor(Math.random() * availableLastNames.length)];
+      }
+
+      if (isSpecialNaming) {
+        newName = `${tempName} the ${monsterTemplate.name}`;
+      } else {
+        newName = tempName;
+      }
+      attempts++;
+    } while (existingNamesSet.has(newName) && attempts < maxAttempts);
+
+    if (attempts >= maxAttempts) {
+      console.warn(`Could not find a unique name for ${monsterTemplate.name}. Using default or fallback.`);
+      return isSpecialNaming ? `${monsterTemplate.name} ${existingNamesSet.size + 1}` : `${monsterTemplate.name} ${existingNamesSet.size + 1}`; // Fallback if unique name generation fails
+    }
+
+    return newName;
+  }, [namesData]);
+
+
+  // Sort the monster list based on the selected sort option
+  const sortedMonsters = useMemo(() => {
+    let sorted = [...allMonsters];
+    switch (monsterSortOption) {
+      case 'name':
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'hp':
+        sorted.sort((a, b) => a.hp - b.hp);
+        break;
+      case 'ac':
+        sorted.sort((a, b) => a.ac - b.ac);
+        break;
+      case 'size':
+        const sizeOrder = { 'Tiny': 0, 'Small': 1, 'Medium': 2, 'Large': 3, 'Huge': 4, 'Gargantuan': 5 };
+        sorted.sort((a, b) => sizeOrder[a.size] - sizeOrder[b.size]);
+        break;
+      default:
+        break;
+    }
+    return sorted;
+  }, [allMonsters, monsterSortOption]);
+
+  // Handle selection of a monster from the dropdown (for adding new)
+  useEffect(() => {
+    if (selectedMonsterId && newCharacterType === 'monster') {
+      const monster = allMonsters.find(m => m.id === selectedMonsterId);
+      if (monster) {
+        setNewCharacterName(monster.name);
+        // Parse HP dice for its parts
+        const { dicePart: hpDicePart, modifier: hpModifierPart } = parseDiceNotationForParts(monster.hpDice);
+        setNewCharacterHpDice(hpDicePart); // Store XdY part
+        setNewCharacterHpModifier(hpModifierPart.toString()); // Store modifier part
+
+        // If rolling HP on add batch is off, use the template HP, otherwise set to 1 for initial display
+        setNewCharacterHp(rollHpOnAddBatch ? '1' : monster.hp.toString());
+        // Set base roll display for monster
+        if (!rollHpOnAddBatch) {
+            setNewCharacterHpBaseRollDisplay((monster.hp - hpModifierPart).toString());
+        } else {
+            setNewCharacterHpBaseRollDisplay(''); // Clear if rolling on batch
+        }
+
+
+        setNewCharacterAc(monster.ac.toString()); // Set AC from monster data
+        setNewCharacterMovement(monster.movement ? parseInt(monster.movement).toString() : '0'); // Parse movement to number
+
+        // Monster actions are already objects with name and dice
+        // We need to map them to a string for the input, but store as objects
+        setNewCharacterActions(monster.actions ? monster.actions.map(a => a.name).join(', ') : '');
+        
+        // Set the monster's initiative bonus for display
+        setCurrentMonsterInitiativeBonus(monster.initiativeBonus || 0);
+
+        // Roll initiative for the first instance
+        const d20Roll = Math.floor(Math.random() * 20) + 1;
+        const totalInit = d20Roll + (monster.initiativeBonus || 0);
+        setNewCharacterInitiative(totalInit.toString()); // Store total in newCharacterInitiative
+        setMonsterInitiativeMathDisplay(d20Roll.toString()); // Store just the d20 roll for display
+
+        // Set monster stats to their default if randomization is off
+        if (!randomizeNewCombatantStats) {
+          setNewCharacterStr(monster.str?.toString() || '10');
+          setNewCharacterDex(monster.dex?.toString() || '10');
+          setNewCharacterCon(monster.con?.toString() || '10');
+          setNewCharacterInt(monster.int?.toString() || '10');
+          setNewCharacterWis(monster.wis?.toString() || '10');
+          setNewCharacterCha(monster.cha?.toString() || '10');
+        } else {
+          // If randomize is on, clear for now, will be randomized on add
+          setNewCharacterStr('');
+          setNewCharacterDex('');
+          setNewCharacterCon('');
+          setNewCharacterInt('');
+          setNewCharacterWis('');
+          setNewCharacterCha('');
+        }
+      }
+    } else if (newCharacterType === 'player') {
+      // Clear monster specific fields if switching to player
+      setNewCharacterName('');
+      setNewCharacterInitiative(''); // Clear initiative for player
+      setMonsterInitiativeMathDisplay(''); // Clear math display
+      setNewCharacterHp('1'); // Reset to default for player
+      setNewCharacterAc('1'); // Reset to default for player
+      setNewCharacterHpDice(''); // Clear HP dice part
+      setNewCharacterHpModifier(''); // Clear HP modifier part
+      setNewCharacterHpBaseRollDisplay(''); // Clear for player
+      setNewCharacterMovement('0'); // Reset to default for player
+      setNewCharacterActions('');
+      setCurrentMonsterInitiativeBonus(0); // Clear bonus
+      // Clear player stats when switching to player type
+      setNewCharacterStr('');
+      setNewCharacterDex('');
+      setNewCharacterCon('');
+      setNewCharacterInt('');
+      setNewCharacterWis('');
+      setNewCharacterCha('');
+    }
+  }, [selectedMonsterId, newCharacterType, allMonsters, rollHpOnAddBatch, randomizeNewCombatantStats]); // Added randomizeNewCombatantStats to dependencies
+
+
+  // Function to roll initiative for monsters
+  const handleRollMonsterInitiative = () => {
+    const d20Roll = Math.floor(Math.random() * 20) + 1;
+    const totalInit = d20Roll + currentMonsterInitiativeBonus;
+    setNewCharacterInitiative(totalInit.toString()); // Store total
+    setMonsterInitiativeMathDisplay(d20Roll.toString()); // Store just the d20 roll
+  };
+
+  // Function to randomize player stats
+  const handleRandomizeStats = () => {
+    const getRandomStat = () => Math.floor(Math.random() * (15 - 8 + 1)) + 8; // Random between 8 and 15
+    setNewCharacterStr(getRandomStat().toString());
+    setNewCharacterDex(getRandomStat().toString());
+    setNewCharacterCon(getRandomStat().toString());
+    setNewCharacterInt(getRandomStat().toString());
+    setNewCharacterWis(getRandomStat().toString());
+    setNewCharacterCha(getRandomStat().toString());
+  };
+
+
+  // Function to add a new character
+  const addCharacter = () => {
+    // Helper to get random stats if randomizeNewCombatantStats is true
+    const getRandomAbilityScore = () => Math.floor(Math.random() * (15 - 8 + 1)) + 8;
+
+    if (newCharacterType === 'player') {
+      if (characters.length >= MAX_TOTAL_COMBATANTS) {
+        console.warn(`Cannot add more combatants. Maximum total limit of ${MAX_TOTAL_COMBATANTS} reached.`);
+        return;
+      }
+      if (newCharacterName && newCharacterInitiative !== '' && newCharacterHp !== '') {
+        const id = Date.now() + Math.random();
+
+        const finalStr = randomizeNewCombatantStats ? getRandomAbilityScore() : (newCharacterStr !== '' ? parseInt(newCharacterStr) : 10);
+        const finalDex = randomizeNewCombatantStats ? getRandomAbilityScore() : (newCharacterDex !== '' ? parseInt(newCharacterDex) : 10);
+        const finalCon = randomizeNewCombatantStats ? getRandomAbilityScore() : (newCharacterCon !== '' ? parseInt(newCharacterCon) : 10);
+        const finalInt = randomizeNewCombatantStats ? getRandomAbilityScore() : (newCharacterInt !== '' ? parseInt(newCharacterInt) : 10);
+        const finalWis = randomizeNewCombatantStats ? getRandomAbilityScore() : (newCharacterWis !== '' ? parseInt(newCharacterWis) : 10);
+        const finalCha = randomizeNewCombatantStats ? getRandomAbilityScore() : (newCharacterCha !== '' ? parseInt(newCharacterCha) : 10);
+
+        const newChar = {
+          id,
+          name: newCharacterName,
+          initiative: parseInt(newCharacterInitiative), // For players, it's just the number
+          hp: parseInt(newCharacterHp),
+          maxHp: parseInt(newCharacterHp),
+          ac: newCharacterAc !== '' ? parseInt(newCharacterAc) : undefined,
+          baseAc: newCharacterAc !== '' ? parseInt(newCharacterAc) : undefined, // Store base AC
+          type: newCharacterType,
+          status: 'active',
+          movement: newCharacterMovement !== '' ? `${parseInt(newCharacterMovement)}ft` : undefined, // Store movement as "Xft"
+          currentMovement: newCharacterMovement !== '' ? parseInt(newCharacterMovement) : undefined, // Initialize currentMovement as number
+          // Convert comma-separated actions string to array of objects for players, assigning unique IDs
+          actions: newCharacterActions ? newCharacterActions.split(',').map(a => ({name: a.trim(), id: crypto.randomUUID()})).filter(a => a.name) : [],
+          color: COLORS[nextColorIndex], // Assign color sequentially
+          actionUsed: false,
+          bonusActionUsed: false,
+          dashUsed: false,
+          reactionUsed: false,
+          turnCompleted: false,
+          species: 'Human', // Default species for players
+          isLocked: false, // New: Default to unlocked
+          // Player ability scores
+          str: finalStr,
+          dex: finalDex,
+          con: finalCon,
+          int: finalInt,
+          wis: finalWis,
+          cha: finalCha,
+          lastAbilityRoll: null, // Initialize lastAbilityRoll
+          items: [], // Players don't have default items from templates
+        };
+        setCharacters(prev => {
+          const updatedChars = [...prev, newChar];
+          console.log("Characters after adding player:", updatedChars); // Debug log
+          return updatedChars;
+        });
+        setNextColorIndex((prevIndex) => (prevIndex + 1) % COLORS.length); // Increment index
+
+        addLogEntry({ type: 'info', characterId: newChar.id, message: `created. Init: ${newChar.initiative}, HP: ${newChar.hp}/${newChar.maxHp}, AC: ${newChar.ac || 'N/A'}, Movement: ${newChar.movement || 'N/A'}` });
+
+        // Clear form fields for single player addition
+        setNewCharacterName('');
+        setNewCharacterInitiative('');
+        setNewCharacterHp('1');
+        setNewCharacterAc('1');
+        setNewCharacterHpDice('');
+        setNewCharacterHpModifier('');
+        setNewCharacterHpBaseRollDisplay('');
+        setNewCharacterMovement('0');
+        setNewCharacterActions('');
+        // Clear player stats
+        setNewCharacterStr('');
+        setNewCharacterDex('');
+        setNewCharacterCon('');
+        setNewCharacterInt('');
+        setNewCharacterWis('');
+        setNewCharacterCha('');
+        setShowAddForm(false); // Hide form after adding a single player
+      } else {
+        console.warn('Please fill in all required player details (Name, Initiative, Max HP).');
+      }
+    } else if (newCharacterType === 'monster') {
+      const quantityToAdd = parseInt(newCharacterQuantity) || 1; // Use 1 if input is empty or invalid
+      if (selectedMonsterId && quantityToAdd > 0) {
+        if (characters.length + quantityToAdd > MAX_TOTAL_COMBATANTS) {
+          console.warn(`Cannot add ${quantityToAdd} combatants. Adding them would exceed the maximum total limit of ${MAX_TOTAL_COMBATANTS}. Current: ${characters.length}, Attempted: ${quantityToAdd}`);
+          return;
+        }
+        if (quantityToAdd > MAX_ADD_QUANTITY) {
+            console.warn(`Cannot add more than ${MAX_ADD_QUANTITY} monsters at once.`);
+            return;
+        }
+
+        const monsterTemplate = allMonsters.find(m => m.id === selectedMonsterId);
+        if (!monsterTemplate) {
+          console.error("Selected monster template not found.");
+          return;
+        }
+
+        const newMonsters = [];
+        // Initiative is already stored as the total in newCharacterInitiative state for monsters
+        const initiativeToAssign = parseInt(newCharacterInitiative);
+        addLogEntry({ type: 'initiative_set', message: `Initiative for ${monsterTemplate.name}s set to:`, value: initiativeToAssign, details: '(From input field)' });
+
+
+        const currentBatchUsedNames = new Set();
+
+        for (let i = 0; i < quantityToAdd; i++) {
+          const id = Date.now() + Math.random(); // Unique ID for each monster
+          // Determine HP based on toggle
+          const fullHpDiceNotation = `${newCharacterHpDice}${newCharacterHpModifier !== '0' && newCharacterHpModifier !== '' ? (parseInt(newCharacterHpModifier) > 0 ? `+${newCharacterHpModifier}` : newCharacterHpModifier) : ''}`;
+          const rolledHpResult = rollHpOnAddBatch && fullHpDiceNotation
+            ? rollDiceDetailed(fullHpDiceNotation)
+            : { total: monsterTemplate.hp, sumOfDice: monsterTemplate.hp - (parseDiceNotationForParts(monsterTemplate.hpDice).modifier || 0) }; // Calculate sumOfDice for static HP
+
+          const finalHp = rolledHpResult.total;
+
+          const finalInitiative = sharedInitiative ? initiativeToAssign : (Math.floor(Math.random() * 20) + 1 + (currentMonsterInitiativeBonus || 0));
+
+          let finalAc = monsterTemplate.ac;
+          if (randomizeAc) {
+            const acDeduction = Math.floor(Math.random() * 4); // 0, 1, 2, or 3
+            finalAc = Math.max(1, monsterTemplate.ac - acDeduction); // AC cannot go below 1
+          }
+
+          let finalActions = [...(monsterTemplate.actions || [])];
+          if (randomizeWeapons) {
+            if (finalActions.length > 0) {
+              // Pick one random action from the existing list and ensure it has a dice property
+              const selectedAction = finalActions[Math.floor(Math.random() * finalActions.length)];
+              finalActions = [{
+                name: selectedAction.name,
+                dice: selectedAction.dice || '1d4', // Ensure a default dice if randomized and none exists
+                modifier: selectedAction.modifier || 0,
+                damageType: selectedAction.damageType || 'Bludgeoning',
+                toHitModifier: selectedAction.toHitModifier || 0,
+              }];
+            } else {
+              // If no actions, assign a generic one with some dice
+              finalActions = [{name: 'Melee Attack', dice: '1d4', modifier: 0, damageType: 'Bludgeoning', toHitModifier: 0}];
+            }
+          }
+          // Assign unique IDs to actions within the monster's actions array
+          finalActions = finalActions.map(action => ({ ...action, id: crypto.randomUUID() }));
+
+
+          let finalName = monsterTemplate.name;
+          if (createUniqueNames) {
+            finalName = generateMonsterName(monsterTemplate, currentBatchUsedNames);
+            currentBatchUsedNames.add(finalName); // Add to the set of names used in this batch
+          }
+
+          // Determine monster stats based on randomizeNewCombatantStats
+          const monsterStr = randomizeNewCombatantStats ? getRandomAbilityScore() : (monsterTemplate.str || 10);
+          const monsterDex = randomizeNewCombatantStats ? getRandomAbilityScore() : (monsterTemplate.dex || 10);
+          const monsterCon = randomizeNewCombatantStats ? getRandomAbilityScore() : (monsterTemplate.con || 10);
+          const monsterInt = randomizeNewCombatantStats ? getRandomAbilityScore() : (monsterTemplate.int || 10);
+          const monsterWis = randomizeNewCombatantStats ? getRandomAbilityScore() : (monsterTemplate.wis || 10);
+          const monsterCha = randomizeNewCombatantStats ? getRandomAbilityScore() : (monsterTemplate.cha || 10);
+
+
+          const newMonster = {
+            id,
+            name: finalName,
+            initiative: finalInitiative,
+            hp: finalHp,
+            maxHp: finalHp, // Max HP is the rolled HP for monsters
+            ac: finalAc, // Use potentially randomized AC
+            baseAc: monsterTemplate.ac, // Store base AC
+            type: 'monster',
+            status: 'active',
+            movement: monsterTemplate.movement, // Store base movement as string "Xft"
+            currentMovement: monsterTemplate.movement ? parseInt(monsterTemplate.movement.replace('ft', '')) : undefined, // Initialize currentMovement as number
+            actions: finalActions, // Use potentially randomized actions
+            hpDice: monsterTemplate.hpDice, // Keep hpDice for re-rolling in details
+            color: COLORS[(nextColorIndex + i) % COLORS.length], // Assign color sequentially
+            actionUsed: false,
+            bonusActionUsed: false,
+            dashUsed: false,
+            reactionUsed: false,
+            turnCompleted: false,
+            species: monsterTemplate.species, // Assign species from template
+            isLocked: false, // New: Default to unlocked
+            // Monster ability scores
+            str: monsterStr,
+            dex: monsterDex,
+            con: monsterCon,
+            int: monsterInt,
+            wis: monsterWis,
+            cha: monsterCha,
+            lastAbilityRoll: null, // Initialize lastAbilityRoll
+            items: monsterTemplate.items || [], // Add items from monster template
+          };
+          newMonsters.push(newMonster);
+          addLogEntry({ type: 'info', characterId: newMonster.id, message: `created. Init: ${newMonster.initiative}, HP: ${newMonster.hp}/${newMonster.maxHp}, AC: ${newMonster.ac || 'N/A'}, Movement: ${newMonster.movement || 'N/A'}` });
+        }
+        setCharacters(prevCharacters => {
+          const updatedChars = [...prevCharacters, ...newMonsters];
+          console.log("Characters after adding monsters:", updatedChars); // Debug log
+          return updatedChars;
+        });
+        setNextColorIndex((prevIndex) => (prevIndex + quantityToAdd) % COLORS.length);
+
+        // After adding, roll a new initiative for the *next* potential monster addition
+        // This ensures the input field is ready for the next monster or batch.
+        const d20Roll = Math.floor(Math.random() * 20) + 1;
+        const newTotalInit = d20Roll + currentMonsterInitiativeBonus;
+        setNewCharacterInitiative(newTotalInit.toString());
+        setMonsterInitiativeMathDisplay(d20Roll.toString());
+
+        setNewCharacterQuantity('1'); // Reset quantity to default for NumberScroller
+        setShowAddForm(true); // Keep form open for quick multiple additions
+      } else {
+        console.warn('Please select a monster and specify a quantity greater than 0.');
+      }
+    }
+  };
+
+  // Function to handle rolling HP dice for the new character form
+  const handleRollNewCharacterHpDice = () => {
+    if (newCharacterHpDice) {
+      const fullDiceNotation = `${newCharacterHpDice}${newCharacterHpModifier !== '0' && newCharacterHpModifier !== '' ? (parseInt(newCharacterHpModifier) > 0 ? `+${newCharacterHpModifier}` : newCharacterHpModifier) : ''}`;
+      const rolledResult = rollDiceDetailed(fullDiceNotation); // Get detailed result
+      setNewCharacterHp(rolledResult.total.toString());
+      setNewCharacterHpBaseRollDisplay(rolledResult.sumOfDice.toString()); // Set sum of dice
+    }
+  };
+
+  // Function to update character HP (used by CharacterCard and CombatantDetails)
+  const updateCharacterHp = useCallback((id, newHp) => {
+    setCharacters(characters.map(char => {
+      if (char.id === id) {
+        const updatedHp = Math.max(0, Math.min(newHp, char.maxHp)); // HP can't go below 0 or above maxHp
+        let status = char.status;
+        if (updatedHp <= 0 && updatedHp > -10 && status !== 'dead') { // Unconscious between 0 and -9 HP
+          status = 'unconscious';
+        } else if (updatedHp <= -10) { // Dead at -10 HP or below
+          status = 'dead';
+        } else if (updatedHp > 0 && status !== 'active' && status !== 'unconscious') { // If HP goes above 0, set to active (unless explicitly dead or unconscious)
+          status = 'active';
+        }
+        // If status becomes dead, clear the last ability roll
+        if (status === 'dead') {
+          return { ...char, hp: updatedHp, status: status, lastAbilityRoll: null };
+        }
+        return { ...char, hp: updatedHp, status: status };
+      }
+      return char;
+    }));
+  }, [characters]); // Dependency array for useCallback
+
+  // Function to update character status (active, unconscious, dead)
+  const updateCharacterStatus = useCallback((id, newStatus) => {
+    setCharacters(prevCharacters => prevCharacters.map(char => {
+      if (char.id === id) {
+        const updatedChar = { ...char, status: newStatus };
+
+        // Apply movement modifiers based on new status
+        const statusEffect = STATUS_EFFECTS[newStatus];
+        if (statusEffect) {
+          if (statusEffect.movement !== undefined) {
+            updatedChar.currentMovement = statusEffect.movement;
+          } else if (statusEffect.movementMultiplier !== undefined) {
+            const baseMovementValue = char.movement ? parseInt(char.movement.replace('ft', '')) : 0;
+            updatedChar.currentMovement = Math.floor(baseMovementValue * statusEffect.movementMultiplier);
+          } else {
+            // If no specific movement modifier, reset to base movement
+            updatedChar.currentMovement = char.movement ? parseInt(char.movement.replace('ft', '')) : 0;
+          }
+        }
+        // If status becomes dead, clear the last ability roll
+        if (newStatus === 'dead') {
+          updatedChar.lastAbilityRoll = null;
+        }
+        return updatedChar;
+      }
+      return char;
+    }));
+  }, []); // No need for characters in dependency array as we use prevCharacters
+
+  // Function to remove a character (now adds to undo stack)
+  const removeCharacter = useCallback((id) => {
+    setCharacters(prevCharacters => {
+      const charToRemove = prevCharacters.find(char => char.id === id);
+      if (charToRemove) {
+        setDeletedCharactersStack(prevStack => {
+          const newStack = [...prevStack, charToRemove];
+          // Keep stack size within MAX_UNDO_HISTORY
+          if (newStack.length > MAX_UNDO_HISTORY) {
+            return newStack.slice(newStack.length - MAX_UNDO_HISTORY);
+          }
+          return newStack;
+        });
+        addLogEntry({ type: 'info', characterId: charToRemove.id, message: `deleted.` });
+      }
+      return prevCharacters.filter(char => char.id !== id);
+    });
+    // If the removed character's panel was open, close it
+    setOpenCombatantIds(prevOpenIds => {
+        const newOpenIds = new Set(prevOpenIds);
+        newOpenIds.delete(id);
+        return newOpenIds;
+    });
+  }, [characters, addLogEntry]); // Dependency array for useCallback
+
+  // Function to restore a character from the deleted stack
+  const restoreCharacter = useCallback((idToRestore) => {
+    setDeletedCharactersStack(prevStack => {
+      const charToRestore = prevStack.find(char => char.id === idToRestore);
+      if (!charToRestore) {
+        console.warn("Character not found in deleted stack.");
+        return prevStack;
+      }
+      if (characters.length >= MAX_TOTAL_COMBATANTS) {
+        console.warn(`Cannot restore combatant. Maximum total limit of ${MAX_TOTAL_COMBATANTS} already reached.`);
+        addLogEntry({ type: 'info', message: `Failed to restore: Max combatant limit (${MAX_TOTAL_COMBATANTS}) reached.` });
+        return prevStack;
+      }
+
+      setCharacters(prevCharacters => {
+        const updatedChars = [...prevCharacters, charToRestore];
+        addLogEntry({ type: 'info', characterId: charToRestore.id, message: `restored.` });
+        return updatedChars;
+      });
+
+      return prevStack.filter(char => char.id !== idToRestore);
+    });
+  }, [characters, addLogEntry]);
+
+  // Function to clear the entire deleted characters stack
+  const clearDeletedCharacters = useCallback(() => {
+    setDeletedCharactersStack([]);
+    addLogEntry({ type: 'info', message: "Cleared deleted combatants history." });
+  }, [addLogEntry]);
+
+
+  // Function to update character color
+  const updateCharacterColor = useCallback((id, newColor) => {
+    setCharacters(prevCharacters =>
+      prevCharacters.map(char =>
+        char.id === id ? { ...char, color: newColor } : char
+      )
+    );
+  }, []); // Dependency array for useCallback
+
+  // Handle selecting/deselecting a combatant - now respects isLocked property
+  const handleSelectCombatant = useCallback((id) => {
+    setOpenCombatantIds(prevOpenIds => {
+      const newOpenIds = new Set(prevOpenIds);
+      const clickedCharacter = characters.find(char => char.id === id);
+
+      if (!clickedCharacter) return newOpenIds; // Should not happen
+
+      if (newOpenIds.has(id)) {
+        // If already open, close it (toggle off)
+        newOpenIds.delete(id);
+      } else {
+        // If not open, and not locked, close all other UNLOCKED panels
+        if (!clickedCharacter.isLocked) {
+          prevOpenIds.forEach(openId => {
+            const openChar = characters.find(char => char.id === openId);
+            if (openChar && !openChar.isLocked) {
+              newOpenIds.delete(openId);
+            }
+          });
+        }
+        // Then open the clicked one
+        newOpenIds.add(id);
+      }
+      return newOpenIds;
+    });
+  }, [characters]); // Dependency on characters to find the clicked character's lock state
+
+  // Function to toggle the 'isLocked' status of a character's detail panel
+  const onTogglePanelLock = useCallback((id, isLocked) => {
+    setCharacters(prevCharacters =>
+      prevCharacters.map(char =>
+        char.id === id ? { ...char, isLocked: isLocked } : char
+      )
+    );
+    // If a panel is unlocked, ensure it closes if another unlocked panel is opened.
+    // This logic is already handled in handleSelectCombatant, but we need to ensure
+    // that if a panel is *unlocked*, it behaves like an unlocked panel when a new one is selected.
+    // No explicit action needed here, as handleSelectCombatant will re-evaluate based on the new `isLocked` state.
+  }, []);
+
+
+  // Function to update action tracking checkboxes, including mutual exclusivity
+  const updateActionCheckbox = useCallback((id, checkboxType, value) => {
+    setCharacters(prevCharacters =>
+      prevCharacters.map(char => {
+        if (char.id === id) {
+          const newChar = { ...char, [checkboxType]: value };
+
+          // Mutual exclusivity for Action and Dash
+          if (checkboxType === 'actionUsed' && value === true) {
+            newChar.dashUsed = false;
+          } else if (checkboxType === 'dashUsed' && value === true) {
+            newChar.actionUsed = false;
+          }
+
+          return newChar;
+        }
+        return char;
+      })
+    );
+  }, []);
+
+  // Function to update character's actions array (for custom weapons)
+  const updateCharacterActions = useCallback((id, newActions) => {
+    setCharacters(prevCharacters =>
+      prevCharacters.map(char =>
+        char.id === id ? { ...char, actions: newActions } : char
+      )
+    );
+  }, []);
+
+  // Function to update character's name
+  const updateCharacterName = useCallback((id, newName) => {
+    setCharacters(prevCharacters =>
+      prevCharacters.map(char =>
+        char.id === id ? { ...char, name: newName } : char
+      )
+    );
+  }, []);
+
+  // New: Function to update a character's lastAbilityRoll
+  const updateAbilityRoll = useCallback((id, rollData) => {
+    setCharacters(prevCharacters =>
+      prevCharacters.map(char =>
+        char.id === id ? { ...char, lastAbilityRoll: rollData } : char
+      )
+    );
+  }, []);
+
+
+  // Function to update current movement
+  const updateCurrentMovement = useCallback((id, newMovement) => {
+    setCharacters(prevCharacters =>
+      prevCharacters.map(char => {
+        if (char.id === id) {
+          // Ensure movement doesn't go below 0
+          const updatedMovement = Math.max(0, newMovement);
+          return { ...char, currentMovement: updatedMovement };
+        }
+        return char;
+      })
+    );
+  }, []);
+
+  // Function to handle "Next Round" button click
+  const handleNextRound = useCallback(() => {
+    setCharacters(prevCharacters =>
+      prevCharacters.map(char => {
+        const updatedChar = {
+          ...char,
+          actionUsed: false,
+          bonusActionUsed: false,
+          dashUsed: false,
+          reactionUsed: false,
+          turnCompleted: false,
+        };
+
+        // Apply movement effects based on current status for the new turn
+        const statusEffect = STATUS_EFFECTS[char.status];
+        if (statusEffect) {
+          if (statusEffect.movement !== undefined) {
+            updatedChar.currentMovement = statusEffect.movement;
+          } else if (statusEffect.movementMultiplier !== undefined) {
+            const baseMovementValue = char.movement ? parseInt(char.movement.replace('ft', '')) : 0;
+            updatedChar.currentMovement = Math.floor(baseMovementValue * statusEffect.movementMultiplier);
+          } else {
+            // If no specific movement modifier from status, reset to base movement
+            updatedChar.currentMovement = char.movement ? parseInt(char.movement.replace('ft', '')) : undefined;
+          }
+        } else {
+          // If status is not found or is 'active', reset to base movement
+          updatedChar.currentMovement = char.movement ? parseInt(char.movement.replace('ft', '')) : undefined;
+        }
+        return updatedChar;
+      })
+    );
+    addLogEntry({ type: 'info', message: "Next Round initiated! All actions reset, movement restored." });
+    console.log("Next Round initiated! All actions reset, movement restored.");
+  }, [addLogEntry]);
+
+
+  // Sort characters by initiative (descending) for the initiative order list
+  const sortedCharactersForInitiative = useMemo(() => {
+    const sorted = [...characters].sort((a, b) => b.initiative - a.initiative);
+    console.log("Sorted Characters for Initiative (useMemo):", sorted); // Debug log
+    return sorted;
+  }, [characters]);
+
+  // Sort characters by name for the summary list (or any other desired default sort for this list)
+  const sortedCharactersForSummary = useMemo(() => {
+    // This list will be manually reordered by drag and drop,
+    // so we return the characters array directly to allow state updates to control order.
+    // However, for initial display, we might want a default sort.
+    // For now, it will reflect the order in the `characters` state.
+    return [...characters]; // Return a copy to avoid direct mutation issues
+  }, [characters]);
+
+
+  // Drag and Drop Handlers for "All Combatants Overview"
+  const handleDragStart = useCallback((e, id) => {
+    setDraggedItemId(id);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', id); // Required for Firefox
+  }, []);
+
+  const handleDragOver = useCallback((e, id) => {
+    e.preventDefault(); // Necessary to allow dropping
+    setDragOverItemId(id);
+  }, []);
+
+  const handleDragLeave = useCallback(() => {
+    setDragOverItemId(null);
+  }, []);
+
+  const handleDrop = useCallback((e, targetId) => {
+    e.preventDefault();
+    setDragOverItemId(null);
+
+    if (draggedItemId === null || draggedItemId === targetId) {
+      return;
+    }
+
+    setCharacters(prevCharacters => {
+      const newCharacters = [...prevCharacters];
+      const draggedIndex = newCharacters.findIndex(char => char.id === draggedItemId);
+      const targetIndex = newCharacters.findIndex(char => char.id === targetId);
+
+      if (draggedIndex === -1 || targetIndex === -1) {
+        return prevCharacters;
+      }
+
+      const [draggedItem] = newCharacters.splice(draggedIndex, 1);
+      newCharacters.splice(targetIndex, 0, draggedItem);
+      return newCharacters;
+    });
+    setDraggedItemId(null);
+  }, [draggedItemId]);
+
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-700 text-white font-inter p-4 sm:p-8">
+      <style>
+        {`
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+          body { font-family: 'Inter', sans-serif; }
+        `}
+      </style>
+
+      <div className="max-w-7xl mx-auto bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 border border-gray-700 flex flex-col md:flex-row gap-8">
+        {/* Left Half: Menu and Summary List */}
+        <div className="w-full md:w-1/2 space-y-8">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+            Battle Tracker
+          </h1>
+
+          {/* Add Combatant Form */}
+          <div className="p-6 bg-gray-700 rounded-xl shadow-inner border border-gray-600">
+            <button
+              onClick={() => setShowAddForm(!showAddForm)}
+              className="w-full py-3 px-6 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-md transition-all duration-300 flex items-center justify-center space-x-2 transform hover:scale-105"
+            >
+              {showAddForm ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+              <span>{showAddForm ? 'Hide Add Form' : 'Add New Combatant'}</span>
+            </button>
+
+            {showAddForm && (
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Type selection */}
+                <div className="col-span-1 sm:col-span-2">
+                  <label htmlFor="combatant-type" className="block text-sm font-medium text-gray-300 mb-1">Combatant Type</label>
+                  <select
+                    id="combatant-type"
+                    value={newCharacterType}
+                    onChange={(e) => {
+                      setNewCharacterType(e.target.value);
+                      setSelectedMonsterId(''); // Clear monster selection when type changes
+                    }}
+                    className="p-3 rounded-lg bg-gray-600 text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
+                  >
+                    <option value="player">Player</option>
+                    <option value="monster">Monster</option>
+                  </select>
+                </div>
+
+                {newCharacterType === 'monster' ? (
+                  <>
+                    {/* Monster sorting options (moved above select monster) */}
+                    <div className="col-span-1 sm:col-span-2">
+                      <label htmlFor="monster-sort" className="block text-sm font-medium text-gray-300 mb-1">Sort Monster List By</label>
+                      <select
+                        id="monster-sort"
+                        value={monsterSortOption}
+                        onChange={(e) => setMonsterSortOption(e.target.value)}
+                        className="p-3 rounded-lg bg-gray-600 text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
+                      >
+                        <option value="name">Name</option>
+                        <option value="hp">HP</option>
+                        <option value="ac">AC</option>
+                        <option value="size">Size</option>
+                      </select>
+                    </div>
+
+                    {/* Monster selection dropdown */}
+                    <div className="col-span-1 sm:col-span-2">
+                      <label htmlFor="monster-select" className="block text-sm font-medium text-gray-300 mb-1">Select Monster</label>
+                      <select
+                        id="monster-select"
+                        value={selectedMonsterId}
+                        onChange={(e) => setSelectedMonsterId(e.target.value)}
+                        className="p-3 rounded-lg bg-gray-600 text-white placeholder-gray-400 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
+                      >
+                        <option value="">-- Select a Monster --</option>
+                        {sortedMonsters.map(monster => (
+                          <option key={monster.id} value={monster.id}>
+                            {monster.name} (HP: {monster.hp}, AC: {monster.ac}, Size: {monster.size})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Row 1: AC and Max HP */}
+                    <div className="col-span-1 sm:col-span-2 flex flex-col sm:flex-row sm:space-x-4">
+                      {/* AC elements */}
+                      <div className="flex-1 mb-4 sm:mb-0">
+                        <label htmlFor="monster-ac" className="block text-sm font-medium text-gray-300 mb-1">Armor Class (AC)</label>
+                        <NumberScroller
+                          value={newCharacterAc}
+                          onChange={setNewCharacterAc}
+                          min={1}
+                          max={40}
+                          isDefaultValueDisplay={true}
+                          inputWidthClass="w-12"
+                          buttonPaddingClass="p-0.5"
+                          iconSizeClass="w-3 h-3"
+                        />
+                      </div>
+                      {/* Max HP elements */}
+                      <div className="flex-1">
+                        <label htmlFor="monster-hp" className="block text-sm font-medium text-gray-300 mb-1">Max HP</label>
+                        <div className="flex items-center space-x-1">
+                            <NumberScroller
+                                value={newCharacterHp}
+                                onChange={setNewCharacterHp}
+                                min={1}
+                                max={maxHpLimit}
+                                textColorClass="text-blue-400"
+                                inputWidthClass="w-12"
+                                buttonPaddingClass="p-0.5"
+                                iconSizeClass="w-3 h-3"
+                            />
+                            <span className="text-gray-300 text-sm">=</span>
+                            <div className="p-1 rounded-lg bg-gray-600 text-white border border-gray-500 w-10 text-center text-gray-300 text-xs">
+                                {newCharacterHpBaseRollDisplay || '0'}
+                            </div>
+                            <span className="text-gray-300 text-sm">+</span>
+                            <NumberScroller
+                                value={newCharacterHpModifier}
+                                onChange={setNewCharacterHpModifier}
+                                min={-50}
+                                max={50}
+                                hideControls={true}
+                                isDefaultValueDisplay={true}
+                                inputWidthClass="w-8"
+                                buttonPaddingClass="p-0.5"
+                                iconSizeClass="w-3 h-3"
+                            />
+                            {newCharacterHpDice && (
+                                <button
+                                  onClick={handleRollNewCharacterHpDice}
+                                  className="p-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md transition-all duration-300 flex items-center justify-center space-x-1 whitespace-nowrap text-sm"
+                                  title="Roll HP Dice"
+                                >
+                                  <Dice className="w-4 h-4" />
+                                  <span>{newCharacterHpDice}</span>
+                                </button>
+                            )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Row 2: Movement and Initiative */}
+                    <div className="col-span-1 sm:col-span-2 flex flex-col sm:flex-row sm:space-x-4">
+                      {/* Movement elements */}
+                      <div className="flex-1 mb-4 sm:mb-0">
+                        <label htmlFor="monster-movement" className="block text-sm font-medium text-gray-300 mb-1">Movement</label>
+                        <NumberScroller
+                          value={newCharacterMovement}
+                          onChange={setNewCharacterMovement}
+                          min={0}
+                          max={200}
+                          step={5}
+                          displayUnit="ft"
+                          isDefaultValueDisplay={true}
+                          inputWidthClass="w-12"
+                          buttonPaddingClass="p-0.5"
+                          iconSizeClass="w-3 h-3"
+                        />
+                      </div>
+                      {/* Initiative elements */}
+                      <div className="flex-1">
+                          <label htmlFor="monster-initiative-display" className="block text-sm font-medium text-gray-300 mb-1">Initiative</label>
+                          <div className="flex items-center space-x-1">
+                              <NumberScroller
+                                  value={newCharacterInitiative}
+                                  onChange={setNewCharacterInitiative}
+                                  min={-10}
+                                  max={30}
+                                  textColorClass="text-blue-400"
+                                  inputWidthClass="w-12"
+                                  buttonPaddingClass="p-0.5"
+                                  iconSizeClass="w-3 h-3"
+                              />
+                              <span className="text-gray-300 text-sm">=</span>
+                              <div className="p-1 rounded-lg bg-gray-600 text-white border border-gray-500 w-10 text-center text-gray-300 text-xs">
+                                  {monsterInitiativeMathDisplay || '0'}
+                              </div>
+                              <span className="text-gray-300 text-sm">+</span>
+                              <NumberScroller
+                                  value={currentMonsterInitiativeBonus.toString()}
+                                  onChange={setCurrentMonsterInitiativeBonus}
+                                  min={-10}
+                                  max={10}
+                                  hideControls={true}
+                                  isDefaultValueDisplay={true}
+                                  inputWidthClass="w-8"
+                                  buttonPaddingClass="p-0.5"
+                                  iconSizeClass="w-3 h-3"
+                              />
+                              <button
+                                onClick={handleRollMonsterInitiative}
+                                className="p-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md transition-all duration-300 flex items-center justify-center whitespace-nowrap text-sm"
+                                title="Roll Monster Initiative"
+                              >
+                                <Dice className="w-4 h-4 mr-1" />
+                                <span>1d20</span>
+                              </button>
+                          </div>
+                      </div>
+                    </div>
+
+                    {/* Row 3: Quantity */}
+                    <div className="col-span-1 sm:col-span-2">
+                        <label htmlFor="monster-quantity" className="block text-sm font-medium text-gray-300 mb-1">Quantity</label>
+                        <NumberScroller
+                            value={newCharacterQuantity}
+                            onChange={setNewCharacterQuantity}
+                            min={1}
+                            max={MAX_ADD_QUANTITY}
+                            isDefaultValueDisplay={true}
+                            inputWidthClass="w-12"
+                            buttonPaddingClass="p-0.5"
+                            iconSizeClass="w-3 h-3"
+                        />
+                    </div>
+
+                    {/* Actions input for monsters */}
+                    <div className="col-span-1 sm:col-span-2">
+                      <label htmlFor="monster-actions" className="block text-sm font-medium text-gray-300 mb-1">Actions (comma-separated)</label>
+                      <textarea
+                        id="monster-actions"
+                        placeholder="e.g., Bite, Claw, Fire Breath"
+                        value={newCharacterActions}
+                        onChange={(e) => setNewCharacterActions(e.target.value)}
+                        rows="2"
+                        className="p-3 rounded-lg bg-gray-600 text-white placeholder-gray-400 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
+                      ></textarea>
+                    </div>
+
+                    {/* Randomization Checkboxes for Monsters */}
+                    <div className="col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+                      <div className="flex items-center">
+                        <input
+                          id="randomize-ac"
+                          type="checkbox"
+                          checked={randomizeAc}
+                          onChange={(e) => setRandomizeAc(e.target.checked)}
+                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor="randomize-ac" className="ml-2 block text-sm text-gray-300">Randomize AC (-0 to -3)</label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          id="randomize-weapons"
+                          type="checkbox"
+                          checked={randomizeWeapons}
+                          onChange={(e) => setRandomizeWeapons(e.target.checked)}
+                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor="randomize-weapons" className="ml-2 block text-sm text-gray-300">Randomize Actions</label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          id="create-unique-names"
+                          type="checkbox"
+                          checked={createUniqueNames}
+                          onChange={(e) => setCreateUniqueNames(e.target.checked)}
+                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor="create-unique-names" className="ml-2 block text-sm text-gray-300">Create Unique Names</label>
+                      </div>
+                      <div className="flex items-center col-span-1 sm:col-span-3"> {/* Full width for this checkbox */}
+                        <input
+                          id="shared-initiative"
+                          type="checkbox"
+                          checked={sharedInitiative}
+                          onChange={(e) => setSharedInitiative(e.target.checked)}
+                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor="shared-initiative" className="ml-2 block text-sm text-gray-300">Shared Initiative (All added monsters get same initiative)</label>
+                      </div>
+                      <div className="flex items-center col-span-1 sm:col-span-3"> {/* New HP roll toggle */}
+                        <input
+                          id="roll-hp-on-add-batch"
+                          type="checkbox"
+                          checked={rollHpOnAddBatch}
+                          onChange={(e) => setRollHpOnAddBatch(e.target.checked)}
+                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor="roll-hp-on-add-batch" className="ml-2 block text-sm text-gray-300">Roll HP for each monster when adding multiple</label>
+                      </div>
+                      {/* New: Randomize Stats Checkbox (applies to both types) - MOVED HERE */}
+                      <div className="col-span-1 sm:col-span-3 flex items-center">
+                        <input
+                          id="randomize-new-combatant-stats"
+                          type="checkbox"
+                          checked={randomizeNewCombatantStats}
+                          onChange={(e) => {
+                            setRandomizeNewCombatantStats(e.target.checked);
+                            if (e.target.checked) {
+                              // If checked, clear current manual inputs for stats
+                              setNewCharacterStr('');
+                              setNewCharacterDex('');
+                              setNewCharacterCon('');
+                              setNewCharacterInt('');
+                              setNewCharacterWis('');
+                              setNewCharacterCha('');
+                            } else {
+                              // If unchecked, and it's a monster, restore default monster stats
+                              if (newCharacterType === 'monster' && selectedMonsterId) {
+                                const monster = allMonsters.find(m => m.id === selectedMonsterId);
+                                if (monster) {
+                                  setNewCharacterStr(monster.str?.toString() || '10');
+                                  setNewCharacterDex(monster.dex?.toString() || '10');
+                                  setNewCharacterCon(monster.con?.toString() || '10');
+                                  setNewCharacterInt(monster.int?.toString() || '10');
+                                  setNewCharacterWis(monster.wis?.toString() || '10');
+                                  setNewCharacterCha(monster.cha?.toString() || '10');
+                                }
+                              }
+                            }
+                          }}
+                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor="randomize-new-combatant-stats" className="ml-2 block text-sm text-gray-300">Randomize All 6 Stats (8-15)</label>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Player specific inputs */}
+                    <div>
+                      <label htmlFor="player-name" className="block text-sm font-medium text-gray-300 mb-1">Player Name</label>
+                      <input
+                        id="player-name"
+                        type="text"
+                        placeholder="Player Name"
+                        value={newCharacterName}
+                        onChange={(e) => setNewCharacterName(e.target.value)}
+                        maxLength={30} // Max length for player name
+                        className="p-3 rounded-lg bg-gray-600 text-white placeholder-gray-400 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="player-initiative" className="block text-sm font-medium text-gray-300 mb-1">Initiative</label>
+                      <input
+                        id="player-initiative"
+                        type="number"
+                        placeholder="Initiative"
+                        value={newCharacterInitiative}
+                        onChange={(e) => setNewCharacterInitiative(e.target.value)}
+                        className="p-3 rounded-lg bg-gray-600 text-white placeholder-gray-400 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="player-hp" className="block text-sm font-medium text-gray-300 mb-1">Max HP</label>
+                      <NumberScroller
+                        value={newCharacterHp}
+                        onChange={setNewCharacterHp}
+                        min={1}
+                        max={maxHpLimit}
+                      />
+                    </div>
+                    {/* AC input for players (optional) */}
+                    <div>
+                      <label htmlFor="player-ac" className="block text-sm font-medium text-gray-300 mb-1">Armor Class (AC) (Optional)</label>
+                      <NumberScroller
+                        value={newCharacterAc}
+                        onChange={setNewCharacterAc}
+                        min={1}
+                        max={40}
+                        isDefaultValueDisplay={true} // Set to true for default display
+                      />
+                    </div>
+                    {/* Movement input for players (optional) */}
+                    <div>
+                      <label htmlFor="player-movement" className="block text-sm font-medium text-gray-300 mb-1">Movement (Optional)</label>
+                      <NumberScroller
+                        value={newCharacterMovement}
+                        onChange={setNewCharacterMovement}
+                        min={0}
+                        max={200}
+                        step={5}
+                        displayUnit="ft"
+                        isDefaultValueDisplay={true} // Set to true for default display
+                      />
+                    </div>
+                    {/* Actions input for players (optional) */}
+                    <div className="col-span-1 sm:col-span-2">
+                      <label htmlFor="player-actions" className="block text-sm font-medium text-gray-300 mb-1">Actions (comma-separated, Optional)</label>
+                      <textarea
+                        id="player-actions"
+                        placeholder="e.g., Attack, Cast Spell"
+                        value={newCharacterActions}
+                        onChange={(e) => setNewCharacterActions(e.target.value)}
+                        rows="2"
+                        className="p-3 rounded-lg bg-gray-600 text-white placeholder-gray-400 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
+                      ></textarea>
+                    </div>
+                    {/* Player Ability Scores */}
+                    <div className="col-span-1 sm:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
+                      <div>
+                        <label htmlFor="player-str" className="block text-sm font-medium text-gray-300 mb-1">STR</label>
+                        <input type="number" id="player-str" value={newCharacterStr} onChange={(e) => setNewCharacterStr(e.target.value)} className="p-3 rounded-lg bg-gray-600 text-white placeholder-gray-400 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full" placeholder="10" disabled={randomizeNewCombatantStats} />
+                      </div>
+                      <div>
+                        <label htmlFor="player-dex" className="block text-sm font-medium text-gray-300 mb-1">DEX</label>
+                        <input type="number" id="player-dex" value={newCharacterDex} onChange={(e) => setNewCharacterDex(e.target.value)} className="p-3 rounded-lg bg-gray-600 text-white placeholder-gray-400 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full" placeholder="10" disabled={randomizeNewCombatantStats} />
+                      </div>
+                      <div>
+                        <label htmlFor="player-con" className="block text-sm font-medium text-gray-300 mb-1">CON</label>
+                        <input type="number" id="player-con" value={newCharacterCon} onChange={(e) => setNewCharacterCon(e.target.value)} className="p-3 rounded-lg bg-gray-600 text-white placeholder-gray-400 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full" placeholder="10" disabled={randomizeNewCombatantStats} />
+                      </div>
+                      <div>
+                        <label htmlFor="player-int" className="block text-sm font-medium text-gray-300 mb-1">INT</label>
+                        <input type="number" id="player-int" value={newCharacterInt} onChange={(e) => setNewCharacterInt(e.target.value)} className="p-3 rounded-lg bg-gray-600 text-white placeholder-gray-400 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full" placeholder="10" disabled={randomizeNewCombatantStats} />
+                      </div>
+                      <div>
+                        <label htmlFor="player-wis" className="block text-sm font-medium text-gray-300 mb-1">WIS</label>
+                        <input type="number" id="player-wis" value={newCharacterWis} onChange={(e) => setNewCharacterWis(e.target.value)} className="p-3 rounded-lg bg-gray-600 text-white placeholder-gray-400 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full" placeholder="10" disabled={randomizeNewCombatantStats} />
+                      </div>
+                      <div>
+                        <label htmlFor="player-cha" className="block text-sm font-medium text-gray-300 mb-1">CHA</label>
+                        <input type="number" id="player-cha" value={newCharacterCha} onChange={(e) => setNewCharacterCha(e.target.value)} className="p-3 rounded-lg bg-gray-600 text-white placeholder-gray-400 border border-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full" placeholder="10" disabled={randomizeNewCombatantStats} />
+                      </div>
+                      <button
+                        onClick={handleRandomizeStats}
+                        className={`col-span-2 sm:col-span-3 py-2 px-4 bg-green-600 text-white font-bold rounded-lg shadow-md transition-all duration-300
+                          ${randomizeNewCombatantStats ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-700'}`}
+                        disabled={randomizeNewCombatantStats} // Disable if the main randomize checkbox is checked
+                      >
+                        Randomize Stats (Manual)
+                      </button>
+                    </div>
+                  </>
+                )}
+
+                <button
+                  onClick={addCharacter}
+                  className="col-span-1 sm:col-span-2 py-3 px-6 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-xl shadow-md transition-all duration-300 transform hover:scale-105"
+                >
+                  Add Combatant
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* List of All Added Combatants (Summary) */}
+          <div className="p-6 bg-gray-700 rounded-xl shadow-inner border border-gray-600">
+            <h2 className="text-xl font-bold text-center mb-4 text-gray-200 flex justify-between items-center">
+              <span>All Combatants Overview</span>
+              <button
+                onClick={() => setIsOverviewCollapsed(!isOverviewCollapsed)}
+                className="p-1 rounded-full bg-gray-600 hover:bg-gray-500 transition-colors duration-200"
+                title={isOverviewCollapsed ? "Expand" : "Collapse"}
+              >
+                {isOverviewCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+              </button>
+            </h2>
+            <div className={`space-y-2 transition-all duration-300 ease-in-out ${isOverviewCollapsed ? 'max-h-0 overflow-hidden' : 'max-h-[500px] overflow-y-auto'}`}> {/* Dynamic height */}
+              {sortedCharactersForSummary.length === 0 ? (
+                <p className="text-center text-gray-400 text-sm py-4">No combatants added yet.</p>
+              ) : (
+                sortedCharactersForSummary.map(char => (
+                  <SummaryCharacterCard
+                    key={char.id}
+                    character={char}
+                    onDragStart={handleDragStart}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                    isDraggingOver={dragOverItemId === char.id}
+                  />
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Undo/Restore Deleted Combatants */}
+          <UndoDropdown
+            deletedCharacters={deletedCharactersStack}
+            onRestore={restoreCharacter}
+            onClear={clearDeletedCharacters}
+          />
+
+          {/* Combat Log Toggle and Display */}
+          <div className="mt-8">
+            <button
+              onClick={() => setShowLog(!showLog)}
+              className="w-full py-3 px-6 bg-gray-600 hover:bg-gray-700 text-white font-bold rounded-xl shadow-md transition-all duration-300 flex items-center justify-center space-x-2 transform hover:scale-105"
+            >
+              <ScrollText className="w-5 h-5" />
+              <span>{showLog ? 'Hide Combat Log' : 'Show Combat Log'}</span>
+            </button>
+
+            {showLog && (
+              <div ref={logRef} className="mt-4 p-4 bg-gray-900 rounded-lg shadow-inner border border-gray-700 h-60 overflow-y-auto text-sm text-gray-300">
+                {logEntries.length === 0 ? (
+                  <p className="text-center text-gray-500">Log is empty.</p>
+                ) : (
+                  logEntries.map((entry, index) => {
+                    const character = entry.characterId ? characters.find(c => c.id === entry.characterId) : null;
+                    const characterName = character ? character.name : '';
+                    const characterColor = character ? character.color : 'inherit'; // Fallback to inherit
+
+                    let valueColorClass = 'text-gray-300'; // Default for info types
+                    if (entry.type === 'to_hit' || entry.type === 'skill' || entry.type === 'initiative_set') {
+                      valueColorClass = 'text-blue-400';
+                    } else if (entry.type === 'damage' || (entry.type === 'hp_change' && entry.hpChangeType === 'damage')) {
+                      valueColorClass = 'text-red-400';
+                    } else if (entry.type === 'hp_change' && entry.hpChangeType === 'heal') {
+                      valueColorClass = 'text-green-400';
+                    }
+
+                    return (
+                      <div key={index} className="mb-1">
+                        <span className="text-gray-500">[{new Date(entry.timestamp).toLocaleTimeString()}]</span>{' '}
+                        {characterName ? (
+                          <span style={{ color: characterColor }} className="font-semibold">{characterName}</span>
+                        ) : null}
+                        {' '}
+                        {entry.message}{' '}
+                        {entry.value !== undefined && (
+                          <span className={`${valueColorClass} font-bold`}>{entry.value}</span>
+                        )}
+                        {entry.details && (
+                          <span className="text-gray-400 ml-1">{entry.details}</span>
+                        )}
+                        {entry.isCrit && (
+                          <span className="text-yellow-300 ml-1 font-bold">(CRITICAL!)</span>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Half: Initiative List and Combatant Details */}
+        <div className="w-full md:w-1/2 p-6 bg-gray-700 rounded-xl shadow-inner border border-gray-600 flex flex-col space-y-3">
+          <h2 className="text-3xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500">
+            Initiative Order
+          </h2>
+
+          {/* Next Round Button */}
+          {characters.length > 0 && (
+            <button
+              onClick={handleNextRound}
+              className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition-all duration-300 flex items-center justify-center space-x-2 transform hover:scale-105 mb-4"
+            >
+              <Check className="w-5 h-5" />
+              <span>Next Round</span>
+            </button>
+          )}
+
+          <div className="space-y-3">
+            {console.log("Rendering Initiative List. Sorted Characters:", sortedCharactersForInitiative)} {/* Debug log */}
+            {sortedCharactersForInitiative.length === 0 ? (
+              <p className="text-center text-gray-400 text-xl py-8">No combatants yet! Add some to start tracking.</p>
+            ) : (
+              sortedCharactersForInitiative.map(char => (
+                <MiniCharacterCard
+                  key={char.id}
+                  character={char}
+                  onSelectCharacter={handleSelectCombatant}
+                  isSelected={openCombatantIds.has(char.id)} // Check if ID is in the Set
+                  onUpdateColor={updateCharacterColor}
+                  allColors={COLORS}
+                  onUpdateHp={updateCharacterHp}
+                  onRemoveCharacter={removeCharacter}
+                  onUpdateStatus={updateCharacterStatus}
+                  onUpdateActionCheckbox={updateActionCheckbox} // Pass new action update function
+                  onUpdateCurrentMovement={updateCurrentMovement} // Pass new movement update function
+                  onUpdateActions={updateCharacterActions} // Pass the new prop
+                  addLogEntry={addLogEntry} // Pass log function
+                  onUpdateCharacterName={updateCharacterName} // Pass character name update function
+                  // Pass custom weapon states and setters
+                  newCustomWeaponName={newCustomWeaponName}
+                  setNewCustomWeaponName={setNewCustomWeaponName}
+                  newCustomWeaponNumDice={newCustomWeaponNumDice}
+                  setNewCustomWeaponNumDice={setNewCustomWeaponNumDice}
+                  newCustomWeaponDieType={newCustomWeaponDieType}
+                  setNewCustomWeaponDieType={setNewCustomWeaponDieType}
+                  newCustomWeaponModifier={newCustomWeaponModifier}
+                  setNewCustomWeaponModifier={setNewCustomWeaponModifier}
+                  selectedDamageTypeForNewWeapon={selectedDamageTypeForNewWeapon}
+                  setSelectedDamageTypeForNewWeapon={setSelectedDamageTypeForNewWeapon}
+                  customDamageTypeName={customDamageTypeName}
+                  setCustomDamageTypeName={setCustomDamageTypeName}
+                  newCustomWeaponToHitModifier={newCustomWeaponToHitModifier}
+                  setNewCustomWeaponToHitModifier={setNewCustomWeaponToHitModifier}
+                  onTogglePanelLock={onTogglePanelLock} // Pass the setter
+                  onUpdateAbilityRoll={updateAbilityRoll} // Pass the new prop
+                />
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
