@@ -1,0 +1,67 @@
+monsterId,actionName,dice,damageType,toHitModifier
+goblin,Scimitar Attack,1d6+2,Slashing,4
+goblin,Shortbow Attack,1d6+1,Piercing,4
+orc,Greataxe Attack,1d12+3,Slashing,5
+orc,Javelin Attack,1d6+3,Piercing,5
+bugbear,Morningstar Attack,2d8+3,Piercing,5
+bugbear,Javelin Attack,1d6+3,Piercing,5
+direwolf,Bite,2d6+3,Piercing,5
+ogre,Greatclub Attack,2d8+4,Bludgeoning,6
+ogre,Javelin Attack,1d6+4,Piercing,6
+dragon_wyrmling_red,Bite,1d10+4,Piercing,6
+dragon_wyrmling_red,Fire Breath,6d6,Fire,
+hobgoblin,Longsword Attack,1d8+1,Slashing,3
+hobgoblin,Longbow Attack,1d8+1,Piercing,3
+skeleton,Shortsword Attack,1d6+2,Piercing,4
+skeleton,Shortbow Attack,1d6+2,Piercing,4
+zombie,Slam,1d6+1,Bludgeoning,3
+giant_spider,Bite (Poison),1d8+3,Piercing,
+owlbear,Beak,1d10+5,Piercing,7
+owlbear,Claws,2d8+5,Slashing,7
+minotaur,Greataxe Attack,2d12+4,Slashing,6
+minotaur,Gore,2d8+4,Piercing,6
+ettin,Greataxe (Left Head),2d12+4,Slashing,7
+ettin,Greataxe (Right Head),2d12+4,Slashing,7
+hill_giant,Greatclub Attack,3d8+6,Bludgeoning,8
+hill_giant,Rock Attack,2d10+6,Bludgeoning,8
+dragon_wyrmling_red_adult,Bite,1d10+4,Piercing,6
+dragon_wyrmling_red_adult,Fire Breath,6d6,Fire,
+hobgoblin_captain,Greatsword,2d6+2,Slashing,5
+hobgoblin_captain,Javelin,1d6+2,Piercing,5
+hobgoblin_captain,Parry (Bonus Action),,,
+ghoul,Claws,2d6+2,Slashing,4
+ghoul,Bite,2d6+2,Piercing,2
+fire_elemental,Touch,2d8+4,Fire,6
+fire_elemental,Fire Form,,,
+water_elemental,Slam,2d8+4,Bludgeoning,7
+water_elemental,Whelm,,,
+air_elemental,Slam,2d8+4,Bludgeoning,5
+air_elemental,Whirlwind,,,
+earth_elemental,Slam,2d8+5,Bludgeoning,8
+earth_elemental,Earth Glide,,,
+grick,Tentacles,2d6+2,Slashing,4
+grick,Beak,1d6+2,Piercing,4
+gargoyle,Claws,1d6+3,Sludgeoning,4
+gargoyle,Bite,1d6+3,Piercing,4
+mimic,Pseudopod,1d8+3,Bludgeoning,5
+mimic,Bite,1d8+3,Acid,5
+displacer_beast,Tentacle,1d6+4,Bludgeoning,6
+displacer_beast,Displacement,,,
+basilisk,Bite,2d6+2,Piercing,4
+basilisk,Petrifying Gaze,,,
+medusa,Shortsword,1d6+2,Piercing,5
+medusa,Snake Hair,1d4+2,Poison,5
+medusa,Petrifying Gaze,,,
+beholder,Bite,2d6+4,Piercing,5
+beholder,Eye Rays,,,
+dragon_shadow,Bite,2d10+6,Piercing,10
+dragon_shadow,Claw,2d6+6,Slashing,10
+dragon_shadow,Shadow Breath,10d6,Necrotic,
+vampire,Unarmed Strike,1d8+4,Bludgeoning,9
+vampire,Bite (Vampire),1d6+4,Necrotic,9
+lich_king,Chill Touch (Cantrip),2d8,Necrotic,10
+lich_king,Disrupt Life (Spell),10d6,Necrotic,
+lich_king,Counterspell (Reaction),,,
+storm_giant,Greatsword,6d6+7,Slashing,14
+storm_giant,Rock,4d10+7,Bludgeoning,14
+storm_giant,Lightning Strike,,,

@@ -1,0 +1,17 @@
+statusKey,description,colorClass,movement,movementMultiplier
+active,No special conditions.,bg-green-500,,
+blinded,Disadvantage on attack rolls and Perception checks that rely on sight. Attack rolls against them have advantage.,bg-yellow-500,,
+charmed,Cannot attack the charmer or target them with harmful abilities or magical effects. The charmer has advantage on any ability check to interact socially with them.,bg-pink-500,,
+deafened,Automatically fails any ability check that relies on hearing.,bg-yellow-500,,
+frightened,Disadvantage on ability checks and attack rolls while the source of its fear is within line of sight. Cannot willingly move closer to the source of its fear.,bg-orange-500,,
+grappled,"Speed becomes 0, and can't benefit from any bonus to speed. The condition ends if the grappler is incapacitated or if the grappled creature escapes.",bg-purple-500,0,
+incapacitated,Cannot take actions or reactions.,bg-gray-500,,
+invisible,Cannot be seen without the aid of magic or a special sense. For the purpose of hiding, the creature is heavily obscured. Attack rolls against the creature have disadvantage, and the creature’s attack rolls have advantage.,bg-indigo-500,,
+paralyzed,"Incapacitated and cannot move or speak. Automatically fails Strength and Dexterity saving throws. Attack rolls against the creature have advantage. Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature.",bg-blue-500,0,
+petrified,"Transformed into a solid inanimate substance. Incapacitated, cannot move or speak, and is unaware of its surroundings. Attack rolls against the creature have advantage. The creature has resistance to all damage. Automatically fails Strength and Dexterity saving throws.",bg-gray-600,0,
+poisoned,Disadvantage on attack rolls and ability checks.,bg-lime-500,,
+prone,"Can only crawl (movement half) or use half its movement to stand up. Disadvantage on attack rolls. Attack rolls against them have advantage if attacker is within 5ft, disadvantage otherwise.",bg-amber-500,,0.5
+restrained,"Speed becomes 0, and can't benefit from any bonus to speed. Attack rolls have disadvantage. Attack rolls against them have advantage. Disadvantage on Dexterity saving throws.",bg-purple-500,0,
+stunned,"Incapacitated, cannot move or speak, and is unaware of its surroundings. Automatically fails Strength and Dexterity saving throws. Attack rolls against the creature have advantage.",bg-blue-500,0,
+unconscious,"Incapacitated, cannot move or speak, and is unaware of its surroundings. Drops held items and falls prone. Attack rolls against the creature have advantage. Any attack that hits the creature from within 5 feet is a critical hit. Automatically fails Strength and Dexterity saving throws.",bg-red-700,0,
+dead,"The creature is dead. Cannot take actions, reactions, or move. Automatically fails all saving throws.",bg-gray-900,0,
